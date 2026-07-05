@@ -1,0 +1,95 @@
+.cd-content { --background:#f5f8fa; }
+.cd-toolbar { --background:transparent; --color:#fff; --border-color:transparent; }
+.cd-toolbar-btn { background:none; border:none; padding:8px; cursor:pointer; ion-icon{ font-size:22px; } }
+
+// Hero
+.cd-hero {
+  padding:56px 20px 24px;
+  position:relative;
+  &::after { content:''; position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(to bottom, transparent, #f5f8fa); }
+}
+.hero-subject-icon { width:64px; height:64px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; ion-icon{ font-size:32px; color:#fff; } }
+.hero-title { font-size:26px; font-weight:800; color:#fff; margin:0 0 4px; }
+.hero-class { font-size:14px; color:rgba(255,255,255,0.65); margin:0 0 16px; }
+.hero-stats { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+.hs-item { display:flex; align-items:center; gap:5px; font-size:13px; color:rgba(255,255,255,0.8); ion-icon{ font-size:14px; } }
+.hs-sep { color:rgba(255,255,255,0.4); }
+.hero-progress { }
+.hp-label { display:flex; justify-content:space-between; font-size:13px; font-weight:600; color:rgba(255,255,255,0.85); margin-bottom:8px; }
+.hp-pct { color:#1cc88a; }
+.hp-detail { font-size:12px; color:rgba(255,255,255,0.5); margin-top:6px; display:block; }
+
+// Teacher Card
+.teacher-card { background:#fff; margin:20px 16px 0; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+.tc-avatar { width:44px; height:44px; background:linear-gradient(135deg,#4e73df,#1cc88a); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; flex-shrink:0; }
+.tc-info { flex:1; }
+.tc-name { display:block; font-size:15px; font-weight:700; color:#181c32; }
+.tc-qual { font-size:12px; color:#a1a5b7; }
+.tc-rating { display:flex; align-items:center; gap:4px; font-size:14px; font-weight:700; color:#181c32; }
+
+// Description
+.cd-description { padding:16px 20px 0; p{ font-size:14px; color:#5e6278; line-height:1.7; margin:0; } }
+
+// Segment
+.cd-segment-wrap { padding:16px 16px 0; }
+.cd-segment {
+  --background:#fff;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  ion-segment-button {
+    --color:#a1a5b7;
+    --color-checked:#4e73df;
+    --indicator-color:#4e73df;
+    font-size:12px;
+    font-weight:600;
+    min-height:44px;
+    ion-icon{ font-size:16px; margin-bottom:2px; }
+  }
+}
+
+// Tab Section
+.tab-section { padding:12px 16px 0; }
+
+// Chapter Groups
+.chapter-group { margin-bottom:16px; }
+.chapter-header { display:flex; justify-content:space-between; align-items:center; padding:8px 4px; margin-bottom:6px; }
+.chapter-title { font-size:14px; font-weight:800; color:#181c32; }
+.chapter-count { font-size:12px; color:#a1a5b7; background:#f5f8fa; padding:2px 8px; border-radius:4px; }
+
+// Video List Items
+.video-list-item {
+  display:flex; align-items:center; gap:12px; background:#fff; border-radius:12px; padding:14px;
+  margin-bottom:8px; cursor:pointer; transition:all .15s; box-shadow:0 1px 6px rgba(0,0,0,0.05);
+  &:active{ transform:scale(0.98); }
+  &.watched { opacity:0.75; }
+  &.locked { cursor:default; opacity:0.6; }
+  &.last { margin-bottom:0; }
+}
+.vli-icon { width:40px; height:40px; border-radius:10px; background:#eef0ff; display:flex; align-items:center; justify-content:center; flex-shrink:0; ion-icon{ font-size:20px; color:#4e73df; } &.locked-icon{ background:#f5f8fa; ion-icon{ color:#a1a5b7; } } }
+.video-list-item.watched .vli-icon { background:rgba(28,200,138,0.1); ion-icon{ color:#1cc88a; } }
+.vli-info { flex:1; min-width:0; }
+.vli-title { display:block; font-size:14px; font-weight:600; color:#181c32; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vli-duration { display:flex; align-items:center; gap:4px; font-size:12px; color:#a1a5b7; ion-icon{ font-size:12px; } }
+.vli-status { flex-shrink:0; }
+.watched-tag { width:24px; height:24px; background:rgba(28,200,138,0.12); color:#1cc88a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+.chevron-icon { font-size:16px; color:#d1d5db; }
+
+// PDF Items
+.pdf-list-item { display:flex; align-items:center; gap:12px; background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; box-shadow:0 1px 6px rgba(0,0,0,0.05); }
+.pli-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; ion-icon{ font-size:22px; } }
+.pli-info { flex:1; min-width:0; }
+.pli-title { display:block; font-size:14px; font-weight:600; color:#181c32; margin-bottom:5px; line-height:1.3; }
+.pli-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.pli-type-chip { padding:.15rem .5rem; border-radius:4px; font-size:11px; font-weight:700; }
+.pli-size,.pli-chapter { font-size:11px; color:#a1a5b7; }
+.pli-download-btn { width:36px; height:36px; border-radius:10px; border:1.5px solid #eff2f5; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; ion-icon{ font-size:18px; color:#4e73df; } &.downloaded{ background:rgba(28,200,138,0.1); border-color:rgba(28,200,138,0.2); ion-icon{ color:#1cc88a; } } }
+
+// Quiz Items
+.quiz-list-item { display:flex; align-items:center; gap:12px; background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; cursor:pointer; transition:all .15s; box-shadow:0 1px 6px rgba(0,0,0,0.05); &:active{ transform:scale(0.98); } &.completed{ opacity:0.8; } }
+.qli-icon { width:40px; height:40px; border-radius:10px; background:#f5f8fa; display:flex; align-items:center; justify-content:center; flex-shrink:0; ion-icon{ font-size:22px; } }
+.qli-info { flex:1; }
+.qli-title { display:block; font-size:14px; font-weight:700; color:#181c32; margin-bottom:4px; }
+.qli-meta { display:flex; gap:6px; font-size:12px; color:#a1a5b7; margin-bottom:3px; }
+.qli-score { font-size:12px; font-weight:700; color:#4e73df; }
+.qli-status { flex-shrink:0; }
+.qli-status-chip { padding:.3rem .75rem; border-radius:20px; font-size:12px; font-weight:700; }

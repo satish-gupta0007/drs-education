@@ -1,0 +1,147 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Teachers</h1>
+    <p class="page-subtitle">Manage teaching staff and their assignments</p>
+  </div>
+  <button class="btn-primary" (click)="openAdd()">
+    <i class="bi bi-person-plus me-2"></i>Add Teacher
+  </button>
+</div>
+
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search by name, ID, specialization..." />
+  </div>
+  <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)" class="filter-select">
+    <option value="">All Teachers</option>
+    <option value="active">Active</option>
+    <option value="inactive">Inactive</option>
+  </select>
+  <span class="results-count">{{ filtered().length }} teachers</span>
+</div>
+
+<div class="teachers-grid">
+  <div *ngFor="let t of filtered()" class="teacher-card" [class.inactive]="!t.isActive">
+    <div class="tc-header">
+      <div class="tc-avatar" [style.background]="getAvatarColor(t.id)">{{ getInitials(t.name) }}</div>
+      <div class="tc-header-info">
+        <span class="emp-id">{{ t.employeeId }}</span>
+        <span class="tc-status" [class.active]="t.isActive">{{ t.isActive ? 'Active' : 'Inactive' }}</span>
+      </div>
+    </div>
+    <div class="tc-body">
+      <h3 class="tc-name">{{ t.name }}</h3>
+      <p class="tc-spec"><i class="bi bi-mortarboard me-1"></i>{{ t.specialization }}</p>
+      <p class="tc-qual"><i class="bi bi-award me-1"></i>{{ t.qualification }}</p>
+      <p class="tc-email"><i class="bi bi-envelope me-1"></i>{{ t.email }}</p>
+      <div class="tc-subjects">
+        <span *ngFor="let s of t.subjects.slice(0,2)" class="subject-chip">{{ s }}</span>
+        <span *ngIf="t.subjects.length > 2" class="subject-chip more">+{{ t.subjects.length - 2 }}</span>
+      </div>
+      <div class="tc-rating">
+        <div class="stars">
+          <i *ngFor="let s of [0,1,2,3,4]" [class]="'bi ' + (s < t.rating ? 'bi-star-fill' : 'bi-star')"></i>
+        </div>
+        <span>{{ t.rating }}</span>
+      </div>
+      <div class="tc-stats">
+        <div class="ts-item"><i class="bi bi-play-circle"></i><span>{{ t.videoCount }}</span><small>Videos</small></div>
+        <div class="ts-div"></div>
+        <div class="ts-item"><i class="bi bi-people"></i><span>{{ t.totalStudents }}</span><small>Students</small></div>
+        <div class="ts-div"></div>
+        <!-- <div class="ts-item"><i class="bi bi-calendar3"></i><span>{{ t.joinDate | date:'yyyy' }}</span><small>Since</small></div> -->
+      </div>
+    </div>
+    <div class="tc-footer">
+      <button class="btn-icon edit"   (click)="openEdit(t)"><i class="bi bi-pencil"></i></button>
+      <button class="btn-icon toggle" (click)="toggleStatus(t)">
+        <i [class]="'bi ' + (t.isActive ? 'bi-toggle-on' : 'bi-toggle-off')"></i>
+      </button>
+      <button class="btn-icon view"><i class="bi bi-person-lines-fill"></i></button>
+      <button class="btn-icon delete" (click)="delete(t.id)"><i class="bi bi-trash3"></i></button>
+    </div>
+  </div>
+
+  <div *ngIf="filtered().length === 0" class="empty-state">
+    <i class="bi bi-person-workspace"></i><h4>No teachers found</h4>
+    <p>Add teaching staff to get started</p>
+    <button class="btn-primary" (click)="openAdd()">Add Teacher</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="close()">
+  <div class="modal-box large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Teacher' : 'Add New Teacher' }}</h5>
+      <button class="modal-close" (click)="close()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #frm="ngForm">
+        <p class="section-label">Personal Information</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="current.name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Employee ID <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="current.employeeId" name="empId" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email <span class="required">*</span></label>
+            <input type="email" class="form-control" [(ngModel)]="current.email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-control" [(ngModel)]="current.phone" name="phone" />
+          </div>
+        </div>
+
+        <p class="section-label" style="margin-top:1rem">Academic Details</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Qualification <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="current.qualification" name="qual" required>
+              <option value="">Select Qualification</option>
+              <option *ngFor="let q of qualifications" [value]="q">{{ q }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Specialization <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="current.specialization" name="spec" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subjects</label>
+          <div class="multi-select-chips">
+            <div *ngFor="let s of subjects()" class="select-chip"
+                 [class.selected]="isSubjectSelected(s)" (click)="toggleSubject(s)">
+              <i *ngIf="isSubjectSelected(s)" class="bi bi-check2"></i> {{ s?.name }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="current.isActive" name="isActive" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span>{{ current.isActive ? 'Active' : 'Inactive' }}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="close()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting || frm.invalid">
+            <span *ngIf="!submitting">{{ editMode() ? 'Update' : 'Add Teacher' }}</span>
+            <span *ngIf="submitting"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,163 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Quizzes</ion-title>
+    <div slot="end" class="toolbar-actions">
+      <!-- <button class="view-toggle-btn" (click)="viewMode.set(viewMode() === 'list' ? 'grid' : 'list')">
+        <ion-icon [name]="viewMode() === 'list' ? 'grid-outline' : 'list-outline'"></ion-icon>
+      </button> -->
+      <button class="view-toggle-btn" (click)="toggleViewMode()">
+  <ion-icon [name]="viewMode() === 'list' ? 'grid-outline' : 'list-outline'"></ion-icon>
+</button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="quizzes-content">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Search -->
+  <div class="quizzes-search-wrap">
+    <ion-searchbar
+  [ngModel]="searchQuery()"
+(ngModelChange)="searchQuery.set($event); onSearchChange()"
+      placeholder="Search quizzes, subjects..."
+      [animated]="true"
+      class="quizzes-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Subject Filter Chips -->
+  <div class="subject-chips-row">
+    <ion-chip
+      [color]="selectedSubject() === '' ? 'primary' : 'medium'"
+      (click)="selectSubject('')">
+      <ion-label>All Subjects</ion-label>
+    </ion-chip>
+    <ion-chip
+      *ngFor="let subject of subjects"
+      [color]="selectedSubject() === subject ? 'primary' : 'medium'"
+      (click)="selectSubject(subject)">
+      <ion-label>{{ subject }}</ion-label>
+    </ion-chip>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="status-tabs-row">
+    <button
+      *ngFor="let status of statuses"
+      class="status-tab"
+      [class.active]="selectedStatus() === status.id"
+      (click)="selectStatus(status.id)">
+      {{ status.label }}
+    </button>
+  </div>
+
+  <!-- Results Count -->
+  <div class="results-row">
+    <span class="results-count">{{ filteredQuizzes().length }} quizzes</span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <ion-icon name="refresh-outline" class="spinning"></ion-icon>
+    <span>Loading quizzes...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && filteredQuizzes().length === 0" class="empty-state">
+    <ion-icon name="help-circle-outline"></ion-icon>
+    <h3>No quizzes found</h3>
+    <p>Try adjusting your search or filters</p>
+  </div>
+
+  <!-- ===== GRID VIEW ===== -->
+  <div *ngIf="!loading() && filteredQuizzes().length > 0 && viewMode() === 'grid'" class="quizzes-grid">
+    <ion-card
+      *ngFor="let quiz of filteredQuizzes()"
+      class="quiz-card"
+      (click)="startQuiz(quiz)">
+
+      <ion-card-header class="quiz-card-header">
+        <div class="quiz-subject-badge" [style.background]="getSubjectColor(quiz?.subjectId)">
+          {{ quiz?.subjectId?.name?.toUpperCase() }}
+        </div>
+        <div class="quiz-status-badge" [style.background]="getQuizStatusColor(quiz)">
+          <ion-icon [name]="quiz.attemptCount ? 'checkmark-circle-outline' : 'play-circle-outline'"></ion-icon>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content class="quiz-card-content">
+        <ion-card-title class="quiz-title">{{ quiz.title }}</ion-card-title>
+
+        <div class="quiz-meta">
+          <div class="meta-item">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>{{ quiz.totalQuestions }} questions</span>
+          </div>
+          <div class="meta-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ formatDuration(quiz.duration) }}</span>
+          </div>
+        </div>
+
+        <div class="quiz-class-info">
+          <span class="class-name">{{ quiz.className }}</span>
+          <span class="marks-info">{{ quiz.totalMarks }} marks</span>
+        </div>
+
+        <div *ngIf="quiz.bestScore" class="quiz-score">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span>Best: {{ quiz.bestScore }}%</span>
+        </div>
+
+        <div class="quiz-status-text" [style.color]="getQuizStatusColor(quiz)">
+          {{ getQuizStatusText(quiz) }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- ===== LIST VIEW ===== -->
+  <div *ngIf="!loading() && filteredQuizzes().length > 0 && viewMode() === 'list'" class="quizzes-list">
+    <ion-card
+      *ngFor="let quiz of filteredQuizzes()"
+      class="quiz-list-card"
+      (click)="startQuiz(quiz)">
+
+      <ion-card-content class="quiz-list-content">
+        <div class="quiz-list-main">
+          <div class="quiz-list-info">
+            <h3 class="quiz-list-title">{{ quiz.title }}</h3>
+            <div class="quiz-list-meta">
+              <span class="subject-tag" [style.background]="getSubjectColor(quiz?.subjectId)">
+                {{ quiz?.subjectId?.name }}
+              </span>
+              <span class="class-tag">{{ quiz.className }}</span>
+              <span class="questions-tag">{{ quiz.totalQuestions }} questions</span>
+              <span class="duration-tag">{{ formatDuration(quiz.duration) }}</span>
+            </div>
+          </div>
+
+          <div class="quiz-list-actions">
+            <div *ngIf="quiz.bestScore" class="score-display">
+              <ion-icon name="trophy-outline"></ion-icon>
+              <span>{{ quiz.bestScore }}%</span>
+            </div>
+            <ion-button fill="clear" size="small">
+              <ion-icon [name]="quiz.attemptCount ? 'refresh-outline' : 'play-circle-outline'"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <div class="quiz-list-footer">
+          <span class="status-text" [style.color]="getQuizStatusColor(quiz)">
+            {{ getQuizStatusText(quiz) }}
+          </span>
+          <span class="marks-text">{{ quiz.totalMarks }} marks • Pass: {{ quiz.passingMarks }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

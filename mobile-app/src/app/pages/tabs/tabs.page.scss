@@ -1,0 +1,62 @@
+.drs-tab-bar {
+  --background: #ffffff;
+  --border: 1px solid #eff2f5;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+
+  ion-tab-button {
+    --color: #a1a5b7;
+    --color-selected: #4e73df;
+    font-size: 11px;
+    font-weight: 600;
+
+    ion-icon { font-size: 22px; }
+    ion-label { font-family: 'Plus Jakarta Sans', sans-serif; }
+  }
+}
+
+
+.custom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #e0e0e0;
+  z-index: 999;
+}
+
+/* Buttons */
+.custom-tab-bar button {
+  flex: 1;
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #888;
+  padding: 6px 0;
+}
+
+/* Icons */
+.custom-tab-bar ion-icon {
+  font-size: 20px;
+}
+
+/* Active tab */
+.custom-tab-bar button.active {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Prevent content overlap */
+ion-content {
+  --padding-bottom: 70px;
+}

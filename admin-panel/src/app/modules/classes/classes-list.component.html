@@ -1,0 +1,152 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Classes</h1>
+    <p class="page-subtitle">Manage your academic classes and sections</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    <i class="bi bi-plus-lg me-2"></i>Add New Class
+  </button>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search classes..." />
+  </div>
+  <div class="toolbar-right">
+    <span class="results-count">{{ filteredClasses.length }} classes</span>
+  </div>
+</div>
+
+<!-- Classes Grid -->
+<div class="classes-grid" *ngIf="!loading()">
+  <div *ngFor="let cls of filteredClasses" class="class-card" [class.inactive]="!cls.isActive">
+
+    <!-- Card Header -->
+    <div class="class-card-header">
+      <div class="class-icon">
+        <i class="bi bi-building"></i>
+      </div>
+      <div class="class-badge" [class.active]="cls.isActive" [class.inactive]="!cls.isActive">
+        {{ cls.isActive ? 'Active' : 'Inactive' }}
+      </div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="class-card-body">
+      <h3 class="class-name">{{ cls.name }}</h3>
+      <div class="class-meta">
+        <span *ngIf="cls.section" class="meta-tag"><i class="bi bi-grid"></i> {{ cls.section }}</span>
+        <span class="meta-tag"><i class="bi bi-calendar3"></i> {{ cls.academicYear }}</span>
+      </div>
+
+      <div class="class-stats">
+        <div class="cs-item">
+          <i class="bi bi-people"></i>
+          <span>{{ cls.studentCount }}</span>
+          <small>Students</small>
+        </div>
+        <div class="cs-divider"></div>
+        <div class="cs-item">
+          <i class="bi bi-book"></i>
+          <span>{{ cls.subjectCount }}</span>
+          <small>Subjects</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Actions -->
+    <div class="class-card-footer">
+      <button class="btn-icon edit" (click)="openEditModal(cls)" title="Edit">
+        <i class="bi bi-pencil"></i>
+      </button>
+      <button class="btn-icon toggle" (click)="toggleStatus(cls)"
+              [title]="cls.isActive ? 'Deactivate' : 'Activate'">
+        <i [class]="'bi ' + (cls.isActive ? 'bi-toggle-on' : 'bi-toggle-off')"></i>
+      </button>
+      <button class="btn-icon delete" (click)="deleteClass(cls.id)" title="Delete">
+        <i class="bi bi-trash3"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredClasses.length === 0" class="empty-state">
+    <i class="bi bi-building"></i>
+    <h4>No classes found</h4>
+    <p>Add a new class to get started</p>
+    <button class="btn-primary" (click)="openAddModal()">Add Class</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div *ngIf="loading()" class="loading-grid">
+  <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton-card"></div>
+</div>
+
+<!-- ===== Modal ===== -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Class' : 'Add New Class' }}</h5>
+      <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #classForm="ngForm">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class Name <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="currentClass.name"
+                   name="name" placeholder="e.g. Class 10" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Section</label>
+            <input type="text" class="form-control" [(ngModel)]="currentClass.section"
+                   name="section" placeholder="e.g. A, B, Science" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Academic Year <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentClass.academicYear" name="academicYear" required>
+              <option value="2023-24">2023-24</option>
+              <option value="2024-25">2024-25</option>
+              <option value="2025-26">2025-26</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="toggle-switch-wrapper">
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="currentClass.isActive" name="isActive" />
+                <span class="toggle-slider"></span>
+              </label>
+              <span>{{ currentClass.isActive ? 'Active' : 'Inactive' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" [(ngModel)]="currentClass.description"
+                    name="description" rows="3"
+                    placeholder="Optional description for this class..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting || classForm.invalid">
+            <span *ngIf="!submitting">{{ editMode() ? 'Update Class' : 'Create Class' }}</span>
+            <span *ngIf="submitting"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

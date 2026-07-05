@@ -1,0 +1,37 @@
+# Angular
+/.angular
+/angular
+/dist
+/tmp
+/out-tsc
+/bazel-out
+.angular/cache/
+
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-error.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Testing
+/coverage
+.nyc_output
+
+# Build
+/build
+*.js.map

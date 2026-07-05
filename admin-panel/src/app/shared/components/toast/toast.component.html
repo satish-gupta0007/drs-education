@@ -1,0 +1,20 @@
+<div class="toast-container">
+  <div *ngFor="let toast of toastService.toasts(); trackBy: trackById"
+       class="toast-item"
+       [class]="'toast-' + toast.type"
+       (click)="toastService.dismiss(toast.id)">
+
+    <div class="toast-icon">
+      <i [class]="'bi ' + getIcon(toast.type)"></i>
+    </div>
+
+    <div class="toast-content">
+      <p class="toast-title">{{ toast.title }}</p>
+      <p class="toast-message" *ngIf="toast.message">{{ toast.message }}</p>
+    </div>
+
+    <button class="toast-close" (click)="toastService.dismiss(toast.id)">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+</div>

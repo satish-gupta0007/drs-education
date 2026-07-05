@@ -1,0 +1,115 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Videos</ion-title>
+
+    <div slot="end" class="toolbar-actions">
+      <button class="view-toggle-btn" (click)="toggleView()">
+        <ion-icon [name]="viewMode() === 'list' ? 'grid-outline' : 'list-outline'"></ion-icon>
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="videos-content">
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Search -->
+  <div class="videos-search-wrap">
+    <ion-searchbar
+      (input)="onSearch($event)"
+      placeholder="Search videos, topics..."
+      [animated]="true"
+      class="vids-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Subjects -->
+  <div class="subject-chips-row">
+    <button
+      class="subject-chip"
+      [class.active]="selectedSubject() === ''"
+      (click)="setSubject('')">
+      All
+    </button>
+
+    <button
+      *ngFor="let s of subjects"
+      class="subject-chip"
+      [class.active]="selectedSubject() === s"
+      (click)="setSubject(s)">
+      {{ s }}
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-tabs-row">
+    <button
+      *ngFor="let f of filters"
+      class="filter-tab"
+      [class.active]="selectedFilter() === f.id"
+      (click)="setFilter(f.id)">
+      {{ f.label }}
+    </button>
+  </div>
+
+  <!-- Count -->
+  <div class="results-row">
+    <span class="results-count">{{ filteredVideos().length }} videos</span>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div *ngIf="viewMode() === 'list'" class="videos-list">
+
+    <div
+      *ngFor="let video of filteredVideos(); trackBy: trackById"
+      class="video-list-card"
+      (click)="openVideo(video.id)">
+
+      <div class="vlc-thumb">
+        <span class="thumb-duration">{{ video.duration }}</span>
+      </div>
+
+      <div class="vlc-info">
+        <h4 class="vlc-title">{{ video.title }}</h4>
+        <p>{{ video.subject }} · {{ video.teacherName }}</p>
+      </div>
+
+      <button
+        class="vlc-save-btn"
+        (click)="toggleSave(video, $event)"
+        [class.saved]="video.tags?.includes('saved')">
+
+        <ion-icon
+          [name]="video.tags?.includes('saved') ? 'bookmark-sharp' : 'bookmark-outline'">
+        </ion-icon>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div *ngIf="viewMode() === 'grid'" class="videos-grid">
+
+    <div
+      *ngFor="let video of filteredVideos(); trackBy: trackById"
+      class="video-grid-card"
+      (click)="openVideo(video.id)">
+
+      <h5>{{ video.title }}</h5>
+      <span>{{ video.subject }}</span>
+
+    </div>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="filteredVideos().length === 0" class="empty-state">
+    <div class="es-icon">🎬</div>
+    <h4>No videos found</h4>
+    <p>Try adjusting your filters</p>
+  </div>
+
+  <div style="height:80px"></div>
+</ion-content>

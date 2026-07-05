@@ -1,0 +1,268 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Videos</h1>
+    <p class="page-subtitle">Upload and manage educational video content</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    <i class="bi bi-camera-video me-2"></i>Upload Video
+  </button>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search videos..." />
+  </div>
+  <div class="toolbar-filters">
+    <select [(ngModel)]="filterSubject" class="filter-select">
+      <option value="">All Subjects</option>
+      <option *ngFor="let s of subjects" [value]="s.name">{{ s.name }}</option>
+    </select>
+    <select [(ngModel)]="filterStatus" class="filter-select">
+      <option value="">All Status</option>
+      <option value="published">Published</option>
+      <option value="draft">Draft</option>
+    </select>
+    <span class="results-count">{{ filteredVideos.length }} videos</span>
+  </div>
+</div>
+
+<!-- Videos Table -->
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Video</th>
+        <th>Subject / Class</th>
+        <th>Chapter / Topic</th>
+        <th>Duration</th>
+        <th>Views</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let video of filteredVideos">
+        <td>
+          <div class="video-cell">
+            <div class="video-thumb" [class.processing]="video.uploadStatus === 'processing'">
+              <img *ngIf="video.thumbnailUrl" [src]="video.thumbnailUrl" [alt]="video.title" />
+              <div *ngIf="!video.thumbnailUrl" class="thumb-placeholder">
+                <i *ngIf="video.uploadStatus !== 'processing'" class="bi bi-play-fill"></i>
+                <div *ngIf="video.uploadStatus === 'processing'" class="spinner"></div>
+              </div>
+              <div class="video-duration-badge">{{ formatDuration(video.duration) }}</div>
+            </div>
+            <div class="video-info">
+              <span class="video-title">{{ video.title }}</span>
+              <span class="video-size">{{ formatFileSize(video.fileSize) }}</span>
+              <div class="video-tags" *ngIf="video.tags.length">
+                <span *ngFor="let tag of video.tags.slice(0,2)" class="tag">#{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="subject-pill">{{ video.subjectName }}</span>
+          <span class="class-text">{{ video.className }}</span>
+        </td>
+        <td>
+          <span class="chapter-text">{{ video.chapter || '—' }}</span>
+          <span class="topic-text">{{ video.topic || '' }}</span>
+        </td>
+        <td>
+          <span class="duration-text">{{ formatDuration(video.duration) }}</span>
+        </td>
+        <td>
+          <div class="views-cell">
+            <i class="bi bi-eye"></i>
+            <span>{{ video.viewCount | number }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="status-group">
+            <span class="status-badge" [class.published]="video.isPublished" [class.draft]="!video.isPublished">
+              {{ video.isPublished ? 'Published' : 'Draft' }}
+            </span>
+            <span *ngIf="video.isFeatured" class="featured-badge">
+              <i class="bi bi-star-fill"></i> Featured
+            </span>
+            <span *ngIf="video.uploadStatus === 'processing'" class="processing-badge">
+              <div class="spinner-sm"></div> Processing
+            </span>
+          </div>
+        </td>
+        <td>
+          <div class="action-group">
+            <button class="btn-icon edit" (click)="openEditModal(video)" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn-icon" [class.toggle-on]="video.isPublished" [class.toggle-off]="!video.isPublished"
+                    (click)="togglePublish(video)" [title]="video.isPublished ? 'Unpublish' : 'Publish'">
+              <i [class]="'bi ' + (video.isPublished ? 'bi-eye-slash' : 'bi-eye')"></i>
+            </button>
+            <button class="btn-icon star" (click)="toggleFeatured(video)"
+                    [class.active]="video.isFeatured" title="Toggle Featured">
+              <i [class]="'bi ' + (video.isFeatured ? 'bi-star-fill' : 'bi-star')"></i>
+            </button>
+            <button class="btn-icon delete" (click)="deleteVideo(video.id)" title="Delete">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="filteredVideos.length === 0" class="empty-state">
+    <i class="bi bi-camera-video-off"></i>
+    <h4>No videos found</h4>
+    <p>Upload your first video to get started</p>
+    <button class="btn-primary" (click)="openAddModal()">Upload Video</button>
+  </div>
+</div>
+
+<!-- ===== Upload / Edit Modal ===== -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal-box large" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Video' : 'Upload New Video' }}</h5>
+      <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #videoForm="ngForm">
+
+        <!-- File Drop Zone -->
+        <div *ngIf="!editMode()"
+             class="drop-zone"
+             [class.dragging]="isDragging()"
+             [class.has-file]="selectedFile"
+             (dragover)="isDragging.set(true); $event.preventDefault()"
+             (dragleave)="isDragging.set(false)"
+             (drop)="onFileDrop($event)">
+
+          <div *ngIf="!selectedFile" class="drop-placeholder">
+            <div class="drop-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+            <h6>Drag & drop your video here</h6>
+            <p>MP4, MOV, AVI, MKV up to 2GB</p>
+            <label class="btn-select-file">
+              <i class="bi bi-folder2-open me-2"></i>Browse File
+              <input type="file" accept="video/*" (change)="onFileSelect($event)" hidden />
+            </label>
+          </div>
+
+          <div *ngIf="selectedFile" class="file-selected">
+            <div class="file-preview" *ngIf="previewUrl">
+              <video [src]="previewUrl" muted preload="metadata" class="preview-video"></video>
+            </div>
+            <div class="file-info">
+              <i class="bi bi-file-earmark-play-fill text-primary"></i>
+              <div>
+                <span class="file-name">{{ selectedFile.name }}</span>
+                <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+              </div>
+              <button type="button" class="btn-remove-file" (click)="selectedFile = null; previewUrl = null">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div *ngIf="submitting" class="upload-progress-bar">
+          <div class="up-header">
+            <span>Uploading video...</span>
+            <span>{{ uploadProgress() }}%</span>
+          </div>
+          <div class="up-track">
+            <div class="up-fill" [style.width]="uploadProgress() + '%'" ></div>
+          </div>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-row mt-3">
+          <div class="form-group span-2">
+            <label class="form-label">Video Title <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="currentVideo.title"
+                   name="title" placeholder="e.g. Introduction to Calculus" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentVideo.className" name="className" required>
+              <option value="">Select Class</option>
+              <option *ngFor="let c of classes" [value]="c.name">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentVideo.subjectName" name="subjectName" required>
+              <option value="">Select Subject</option>
+              <option *ngFor="let s of subjects" [value]="s.name">{{ s.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Chapter</label>
+            <input type="text" class="form-control" [(ngModel)]="currentVideo.chapter"
+                   name="chapter" placeholder="e.g. Chapter 1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Topic</label>
+            <input type="text" class="form-control" [(ngModel)]="currentVideo.topic"
+                   name="topic" placeholder="e.g. Limits and Derivatives" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" [(ngModel)]="currentVideo.description"
+                    name="description" rows="3"
+                    placeholder="Describe what this video covers..."></textarea>
+        </div>
+
+        <div class="form-row options-row">
+          <div class="toggle-option">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="currentVideo.isPublished" name="isPublished" />
+              <span class="toggle-slider"></span>
+            </label>
+            <div>
+              <span class="toggle-label">Publish Video</span>
+              <small>Make visible to students</small>
+            </div>
+          </div>
+          <div class="toggle-option">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="currentVideo.isFeatured" name="isFeatured" />
+              <span class="toggle-slider"></span>
+            </label>
+            <div>
+              <span class="toggle-label">Featured</span>
+              <small>Show in highlights</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary"
+                  [disabled]="submitting || videoForm.invalid || (!editMode() && !selectedFile)">
+            <span *ngIf="!submitting">{{ editMode() ? 'Save Changes' : 'Upload Video' }}</span>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2"></span>Uploading...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

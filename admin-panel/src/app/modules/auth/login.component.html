@@ -1,0 +1,100 @@
+<div class="login-page">
+  <!-- Left Panel: Branding -->
+  <div class="login-brand">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <h1 class="brand-title">DRS Education</h1>
+      <p class="brand-tagline">Empowering learners, shaping futures</p>
+
+      <div class="brand-stats">
+        <div class="stat-item">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Students</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Videos</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Teachers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-circles">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Login Form -->
+  <div class="login-form-panel">
+    <div class="login-card">
+      <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your admin account</p>
+      </div>
+
+      <!-- Error Alert -->
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle me-2"></i>{{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <i class="bi bi-envelope input-icon"></i>
+            <input
+              type="email"
+              class="form-input"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="admin@drseducation.in"
+              autocomplete="email"
+              required />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label">
+            Password
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </label>
+          <div class="input-wrapper">
+            <i class="bi bi-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-input"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required />
+            <button type="button" class="toggle-pass" (click)="showPassword = !showPassword">
+              <i [class]="'bi ' + (showPassword ? 'bi-eye-slash' : 'bi-eye')"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-login" [disabled]="loading">
+          <span *ngIf="!loading">Sign In <i class="bi bi-arrow-right ms-2"></i></span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2"></span>Signing in...
+          </span>
+        </button>
+      </form>
+
+      <p class="login-footer">
+        DRS Education Admin Panel &copy; 2025
+      </p>
+    </div>
+  </div>
+</div>

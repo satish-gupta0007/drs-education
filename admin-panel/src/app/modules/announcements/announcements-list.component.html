@@ -1,0 +1,125 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Announcements</h1>
+    <p class="page-subtitle">Broadcast notices to students, teachers and parents</p>
+  </div>
+  <button class="btn-primary" (click)="openAdd()">
+    <i class="bi bi-megaphone me-2"></i>New Announcement
+  </button>
+</div>
+
+<div class="filter-tabs">
+  <button [class.active]="filterType() === ''" (click)="filterType.set('')">All <span>{{ announcements().length }}</span></button>
+  <button *ngFor="let t of types" [class.active]="filterType() === t" (click)="filterType.set(t)"
+          [style.--tab-color]="typeColors[t]">
+    {{ typeLabels[t] }}
+  </button>
+</div>
+
+<div class="announcements-list">
+  <div *ngFor="let ann of filtered" class="ann-card" [class.pinned]="ann.isPinned" [class.unpublished]="!ann.isPublished">
+    <div class="ann-type-stripe" [style.background]="typeColors[ann.type]"></div>
+    <div class="ann-content">
+      <div class="ann-top">
+        <div class="ann-badges">
+          <span class="type-chip" [style.background]="typeColors[ann.type]+'20'" [style.color]="typeColors[ann.type]">
+            {{ typeLabels[ann.type] }}
+          </span>
+          <span *ngIf="ann.isPinned" class="pin-chip"><i class="bi bi-pin-angle-fill"></i> Pinned</span>
+          <span class="audience-chip"><i class="bi bi-people me-1"></i>{{ ann.targetAudience }}</span>
+          <span *ngIf="!ann.isPublished" class="draft-chip">Draft</span>
+        </div>
+        <div class="ann-actions">
+          <button class="btn-icon pin" (click)="togglePin(ann)" [class.active]="ann.isPinned" title="Pin">
+            <i class="bi bi-pin-angle"></i>
+          </button>
+          <button class="btn-icon edit" (click)="openEdit(ann)" title="Edit"><i class="bi bi-pencil"></i></button>
+          <button class="btn-icon" [class.toggle-on]="ann.isPublished" [class.toggle-off]="!ann.isPublished"
+                  (click)="togglePublish(ann)" [title]="ann.isPublished ? 'Unpublish' : 'Publish'">
+            <i [class]="'bi ' + (ann.isPublished ? 'bi-eye-slash' : 'bi-eye')"></i>
+          </button>
+          <button class="btn-icon delete" (click)="deleteAnnouncement(ann.id)"><i class="bi bi-trash3"></i></button>
+        </div>
+      </div>
+      <h3 class="ann-title">{{ ann.title }}</h3>
+      <p class="ann-body">{{ ann.content }}</p>
+      <div class="ann-footer">
+        @if (ann.createdAt && (ann.createdAt | json) !== '{}') {
+        <span class="ann-date"><i class="bi bi-calendar3 me-1"></i>{{ ann?.createdAt | date:'MMM d, y' }}</span>
+
+        }
+         @if (ann.publishedAt && (ann.publishedAt | json) !== '{}') {
+              <span *ngIf="ann.publishedAt" class="ann-date"><i class="bi bi-send me-1"></i>Published {{ ann.publishedAt | date:'MMM d, y' }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filtered.length === 0" class="empty-state">
+    <i class="bi bi-megaphone"></i>
+    <h4>No announcements</h4>
+    <p>Create your first announcement</p>
+    <button class="btn-primary" (click)="openAdd()">New Announcement</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="close()">
+  <div class="modal-box large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Announcement' : 'New Announcement' }}</h5>
+      <button class="modal-close" (click)="close()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #f="ngForm">
+        <div class="form-group">
+          <label class="form-label">Title <span class="required">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="current.title" name="title" placeholder="Announcement title..." required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="current.type" name="type" required>
+              <option *ngFor="let t of types" [value]="t">{{ typeLabels[t] }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Audience <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="current.targetAudience" name="audience" required>
+              <option value="all">All</option>
+              <option value="students">Students Only</option>
+              <option value="teachers">Teachers Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content <span class="required">*</span></label>
+          <textarea class="form-control" [(ngModel)]="current.content" name="content" rows="5" placeholder="Write the announcement details..." required></textarea>
+        </div>
+        <div class="form-options-row">
+          <div class="toggle-option">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="current.isPinned" name="isPinned" />
+              <span class="toggle-slider"></span>
+            </label>
+            <div><span>Pin Announcement</span><small>Show at top of list</small></div>
+          </div>
+          <div class="toggle-option">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="current.isPublished" name="isPublished" />
+              <span class="toggle-slider"></span>
+            </label>
+            <div><span>Publish Now</span><small>Make visible to users</small></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="close()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting() || f.invalid">
+            <span *ngIf="!submitting()">{{ editMode() ? 'Update' : 'Publish' }}</span>
+            <span *ngIf="submitting()"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

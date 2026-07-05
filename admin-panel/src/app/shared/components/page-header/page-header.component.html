@@ -1,0 +1,10 @@
+<div class="page-header">
+  <div class="ph-left">
+    <h1 class="ph-title">{{ title }}</h1>
+    <p class="ph-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+  </div>
+  <button *ngIf="buttonLabel" class="btn-primary" (click)="buttonClick.emit()" [disabled]="loading">
+    <i [class]="'bi ' + buttonIcon + ' me-2'"></i>
+    {{ buttonLabel }}
+  </button>
+</div>

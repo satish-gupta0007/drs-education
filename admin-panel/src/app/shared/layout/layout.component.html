@@ -1,0 +1,26 @@
+<div class="drs-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Sidebar -->
+  <app-sidebar [collapsed]="sidebarCollapsed()" />
+
+  <!-- Main Content Area -->
+  <div class="drs-main-wrapper">
+    <!-- Header -->
+    <app-header (toggleSidebar)="toggleSidebar()" />
+
+    <!-- Page Content -->
+    <main class="drs-content">
+      <div class="container-fluid">
+        <router-outlet />
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="drs-footer">
+      <span>© 2025 <strong>DRS Education</strong>. All rights reserved.</span>
+      <span class="footer-version">v1.0.0 · MongoDB</span>
+    </footer>
+  </div>
+
+  <!-- Global Toast Notifications -->
+  <app-toast />
+</div>

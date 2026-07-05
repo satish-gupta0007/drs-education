@@ -1,0 +1,137 @@
+<div class="drs-app" [class.drs-app--sidebar-open]="sidebarOpen()" [class.drs-app--sidebar-closed]="!sidebarOpen()">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="drs-sidebar">
+    <!-- Sidebar Header -->
+    <div class="drs-sidebar__header">
+      <div class="drs-sidebar__logo">
+        <div class="drs-logo-icon">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="10" fill="#1565c0"/>
+            <path d="M8 12h10a6 6 0 0 1 0 12H8V12z" fill="white"/>
+            <path d="M20 20h12v8H20V20z" fill="white" fill-opacity="0.7"/>
+            <circle cx="26" cy="14" r="4" fill="white" fill-opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="drs-logo-text">
+          <span class="drs-logo-text__main">DRS</span>
+          <span class="drs-logo-text__sub">Education</span>
+        </div>
+      </div>
+      <button class="drs-sidebar__toggle" (click)="toggleSidebar()">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="drs-sidebar__nav">
+      <ng-container *ngFor="let item of navItems">
+        <!-- Single Item -->
+        <a
+          *ngIf="!item.children"
+          [routerLink]="item.route"
+          routerLinkActive="drs-nav-item--active"
+          class="drs-nav-item"
+        >
+          <span class="drs-nav-item__icon"><i [class]="item.icon"></i></span>
+          <span class="drs-nav-item__label">{{ item.label }}</span>
+          <span class="drs-nav-item__badge" *ngIf="item.badge" [class]="'drs-badge drs-badge--' + item.badgeColor">
+            {{ item.badge }}
+          </span>
+        </a>
+
+        <!-- Group with Children -->
+        <div *ngIf="item.children" class="drs-nav-group" [class.drs-nav-group--open]="isExpanded(item.label)">
+          <div class="drs-nav-group__header" (click)="toggleMenu(item.label)">
+            <span class="drs-nav-item__icon"><i [class]="item.icon"></i></span>
+            <span class="drs-nav-item__label">{{ item.label }}</span>
+            <span class="drs-nav-group__arrow"><i class="fa-solid fa-chevron-right"></i></span>
+          </div>
+          <div class="drs-nav-group__children">
+            <a
+              *ngFor="let child of item.children"
+              [routerLink]="child.route"
+              routerLinkActive="drs-nav-child--active"
+              class="drs-nav-child"
+            >
+              <span class="drs-nav-child__dot"></span>
+              <span class="drs-nav-child__icon"><i [class]="child.icon"></i></span>
+              <span>{{ child.label }}</span>
+            </a>
+          </div>
+        </div>
+      </ng-container>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="drs-sidebar__footer">
+      <div class="drs-user-card">
+        <div class="drs-user-card__avatar">
+          <img src="https://ui-avatars.com/api/?name=Admin+User&background=1565c0&color=fff" alt="Admin" />
+          <span class="drs-user-card__status"></span>
+        </div>
+        <div class="drs-user-card__info">
+          <strong>{{ authService.currentUser()?.name || 'Admin User' }}</strong>
+          <span>{{ authService.currentUser()?.role || 'Administrator' }}</span>
+        </div>
+        <button class="drs-user-card__logout" (click)="logout()" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="drs-main">
+
+    <!-- Top Header -->
+    <header class="drs-header">
+      <div class="drs-header__left">
+        <button class="drs-header__menu-btn" (click)="toggleSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="drs-header__breadcrumb">
+          <span>DRS Admin</span>
+          <i class="fa-solid fa-chevron-right"></i>
+          <span class="drs-header__breadcrumb-active">Dashboard</span>
+        </div>
+      </div>
+      <div class="drs-header__right">
+        <!-- Search -->
+        <div class="drs-header__search">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" placeholder="Search anything..." />
+          <span class="drs-header__search-shortcut">⌘K</span>
+        </div>
+        <!-- Notifications -->
+        <button class="drs-header__icon-btn drs-header__notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="drs-header__icon-btn-badge" *ngIf="notificationCount() > 0">
+            {{ notificationCount() }}
+          </span>
+        </button>
+        <!-- Theme -->
+        <button class="drs-header__icon-btn">
+          <i class="fa-regular fa-moon"></i>
+        </button>
+        <!-- Profile -->
+        <div class="drs-header__profile">
+          <img src="https://ui-avatars.com/api/?name=Admin+User&background=1565c0&color=fff" alt="Admin" />
+          <div class="drs-header__profile-info">
+            <strong>{{ authService.currentUser()?.name || 'Admin User' }}</strong>
+            <span>Administrator</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="drs-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div class="drs-overlay" *ngIf="mobileMenuOpen()" (click)="toggleMobileMenu()"></div>
+</div>

@@ -1,0 +1,133 @@
+<div class="drs-login-page">
+  <!-- Background decoration -->
+  <div class="drs-login-bg">
+    <div class="drs-login-bg__shape drs-login-bg__shape--1"></div>
+    <div class="drs-login-bg__shape drs-login-bg__shape--2"></div>
+    <div class="drs-login-bg__shape drs-login-bg__shape--3"></div>
+  </div>
+
+  <!-- Left Panel -->
+  <div class="drs-login-info">
+    <div class="drs-login-info__content">
+      <div class="drs-login-info__logo">
+        <div class="drs-logo">
+          <span class="drs-logo__icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" rx="12" fill="white" fill-opacity="0.2"/>
+              <path d="M8 12h10a6 6 0 0 1 0 12H8V12z" fill="white"/>
+              <path d="M20 20h12v8H20V20z" fill="white" fill-opacity="0.7"/>
+              <circle cx="26" cy="14" r="4" fill="white" fill-opacity="0.8"/>
+            </svg>
+          </span>
+          <span class="drs-logo__text">DRS Education</span>
+        </div>
+      </div>
+      <h2 class="drs-login-info__title">Transform Education<br><span>with Technology</span></h2>
+      <p class="drs-login-info__subtitle">Manage classes, subjects, videos, and PDFs all in one powerful admin panel built for modern educators.</p>
+      
+      <div class="drs-login-info__features">
+        <div class="feature-item" *ngFor="let feature of features">
+          <div class="feature-item__icon">
+            <i [class]="feature.icon"></i>
+          </div>
+          <div class="feature-item__text">
+            <strong>{{ feature.title }}</strong>
+            <span>{{ feature.desc }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="drs-login-info__stats">
+        <div class="stat" *ngFor="let stat of stats">
+          <strong>{{ stat.value }}</strong>
+          <span>{{ stat.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel - Login Form -->
+  <div class="drs-login-form-panel">
+    <div class="drs-login-form-wrapper">
+      <div class="drs-login-form-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your admin account to continue</p>
+      </div>
+
+      <!-- Error Alert -->
+      <div class="drs-alert drs-alert--danger" *ngIf="errorMessage">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="drs-form">
+        <!-- Email Field -->
+        <div class="drs-form__group" [class.drs-form__group--error]="email?.invalid && email?.touched">
+          <label class="drs-form__label">Email Address</label>
+          <div class="drs-form__input-wrapper">
+            <span class="drs-form__input-icon"><i class="fa-regular fa-envelope"></i></span>
+            <input
+              type="email"
+              class="drs-form__input"
+              formControlName="email"
+              placeholder="admin@drseducation.com"
+              autocomplete="email"
+            />
+          </div>
+          <span class="drs-form__error" *ngIf="email?.errors?.['required'] && email?.touched">Email is required</span>
+          <span class="drs-form__error" *ngIf="email?.errors?.['email'] && email?.touched">Enter a valid email</span>
+        </div>
+
+        <!-- Password Field -->
+        <div class="drs-form__group" [class.drs-form__group--error]="password?.invalid && password?.touched">
+          <label class="drs-form__label">Password</label>
+          <div class="drs-form__input-wrapper">
+            <span class="drs-form__input-icon"><i class="fa-solid fa-lock"></i></span>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="drs-form__input"
+              formControlName="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            />
+            <button type="button" class="drs-form__password-toggle" (click)="togglePassword()">
+              <i [class]="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+            </button>
+          </div>
+          <span class="drs-form__error" *ngIf="password?.errors?.['required'] && password?.touched">Password is required</span>
+        </div>
+
+        <!-- Options -->
+        <div class="drs-form__options">
+          <label class="drs-checkbox">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span class="drs-checkbox__box"></span>
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="drs-form__forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="drs-btn drs-btn--primary drs-btn--full" [disabled]="isLoading">
+          <span *ngIf="!isLoading">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Sign In to Admin Panel
+          </span>
+          <span *ngIf="isLoading" class="drs-spinner">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            Signing in...
+          </span>
+        </button>
+      </form>
+
+      <div class="drs-login-demo">
+        <span>Demo Credentials:</span>
+        <code>admin&#64;drseducation.com / admin123</code>
+      </div>
+
+      <div class="drs-login-footer">
+        <span>&copy; 2025 DRS Education. All rights reserved.</span>
+      </div>
+    </div>
+  </div>
+</div>

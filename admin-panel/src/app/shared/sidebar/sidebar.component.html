@@ -1,0 +1,71 @@
+<aside class="drs-sidebar" [class.collapsed]="collapsed">
+  <!-- Logo -->
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="logo-icon">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <div class="brand-text" *ngIf="!collapsed">
+        <span class="brand-name">DRS</span>
+        <span class="brand-sub">Education</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li *ngFor="let item of navItems" class="nav-item"
+          [class.has-children]="item.children"
+          [class.expanded]="isExpanded(item.label)">
+
+        <!-- Single item -->
+        <a *ngIf="!item.children && item.route"
+           [routerLink]="item.route"
+           routerLinkActive="active"
+           class="nav-link"
+           [title]="collapsed ? item.label : ''">
+          <i [class]="'bi ' + item.icon + ' nav-icon'"></i>
+          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+          <span *ngIf="item.badge && !collapsed"
+                [class]="'badge bg-' + (item.badgeType || 'primary') + ' ms-auto'">
+            {{ item.badge }}
+          </span>
+        </a>
+
+        <!-- Parent item with children -->
+        <a *ngIf="item.children"
+           class="nav-link nav-toggle"
+           (click)="toggleMenu(item.label)"
+           [class.open]="isExpanded(item.label)">
+          <i [class]="'bi ' + item.icon + ' nav-icon'"></i>
+          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+          <i class="bi bi-chevron-right toggle-arrow ms-auto" *ngIf="!collapsed"></i>
+        </a>
+
+        <!-- Submenu -->
+        <ul *ngIf="item.children && isExpanded(item.label) && !collapsed" class="sub-nav">
+          <li *ngFor="let child of item.children">
+            <a [routerLink]="child.route"
+               routerLinkActive="active"
+               class="sub-nav-link">
+              <i [class]="'bi ' + child.icon + ' sub-icon'"></i>
+              <span>{{ child.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer" *ngIf="!collapsed">
+    <div class="footer-card">
+      <i class="bi bi-question-circle"></i>
+      <div>
+        <p class="mb-0">Need Help?</p>
+        <small>support&#64;drseducation.in</small>
+      </div>
+    </div>
+  </div>
+</aside>

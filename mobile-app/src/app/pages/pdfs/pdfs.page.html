@@ -1,0 +1,115 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Study Materials</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pdfs-content">
+
+  <!-- Search -->
+  <div class="pdfs-search-wrap">
+    <ion-searchbar
+      (input)="onSearch($event)"
+      placeholder="Search notes, papers..."
+      [animated]="true"
+      class="pdfs-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Type Filters -->
+  <div class="type-chips-row">
+
+    <button
+      class="type-chip"
+      [class.active]="selectedType() === ''"
+      (click)="setType('')">
+      All
+    </button>
+
+    <button
+      *ngFor="let t of types; trackBy: trackById"
+      class="type-chip"
+      [class.active]="selectedType() === t"
+      (click)="setType(t)"
+      [style.--tc]="typeColors[t]">
+
+      {{ typeLabels[t] }}
+    </button>
+
+  </div>
+
+  <!-- List -->
+  <div class="pdfs-list">
+
+    <div
+      *ngFor="let pdf of filtered(); trackBy: trackById"
+      class="pdf-card">
+
+      <div
+        class="pc-icon"
+        [style.background]="pdf.color + '20'"
+        [style.color]="pdf.color">
+        <ion-icon name="document-outline"></ion-icon>
+      </div>
+
+      <div class="pc-info">
+        <h4 class="pc-title">{{ pdf.title }}</h4>
+
+        <div class="pc-meta">
+          <span
+            class="pc-type-chip"
+            [style.background]="typeColors[pdf.type] + '18'"
+            [style.color]="typeColors[pdf.type]">
+            {{ typeLabels[pdf.type] }}
+          </span>
+
+          <span
+            class="pc-subject"
+            [style.color]="pdf.color">
+            {{ pdf.subject }}
+          </span>
+        </div>
+
+        <div class="pc-detail">
+          <span>{{ pdf.chapter }}</span>
+          <span>·</span>
+          <span>{{ pdf.size }}</span>
+        </div>
+      </div>
+
+      <div class="pc-actions">
+
+        <button
+          class="pc-action-btn save"
+          (click)="toggleSave(pdf, $event)"
+          [class.saved]="pdf.isSaved">
+
+          <ion-icon
+            [name]="pdf.isSaved ? 'bookmark-sharp' : 'bookmark-outline'">
+          </ion-icon>
+        </button>
+
+        <button
+          class="pc-action-btn download"
+          (click)="toggleDownload(pdf, $event)"
+          [class.downloaded]="pdf.isDownloaded">
+
+          <ion-icon
+            [name]="pdf.isDownloaded ? 'checkmark-circle-outline' : 'cloud-download-outline'">
+          </ion-icon>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filtered().length === 0" class="empty-state">
+    <div class="es-icon">📄</div>
+    <h4>No materials found</h4>
+    <p>Try a different search or filter</p>
+  </div>
+
+  <div style="height:80px"></div>
+</ion-content>

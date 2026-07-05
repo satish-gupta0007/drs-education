@@ -1,0 +1,305 @@
+<div class="page-header">
+  <div><h1 class="page-title">Quizzes</h1><p class="page-subtitle">Build and manage adaptive quizzes for students</p></div>
+  <button class="btn-primary" (click)="openAdd()"><i class="bi bi-plus-lg me-2"></i>Create Quiz</button>
+</div>
+
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search quizzes..." />
+  </div>
+  <select [(ngModel)]="filterClass" class="filter-select">
+    <option value="">All Classes</option>
+    <option *ngFor="let c of classes" [value]="c.name">{{ c.name }}</option>
+  </select>
+  <select [(ngModel)]="filterSubject" class="filter-select">
+    <option value="">All Subjects</option>
+    <option *ngFor="let s of subjects" [value]="s.name">{{ s.name }}</option>
+  </select>
+  <span class="results-count">{{ filtered.length }} quizzes</span>
+</div>
+
+<div class="table-card">
+  <table class="data-table" *ngIf="!loading">
+    <thead>
+      <tr><th>Quiz</th><th>Subject / Class</th><th>Duration</th><th>Marks</th><th>Attempts</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let q of filtered">
+        <td>
+          <div class="quiz-cell">
+            <div class="quiz-icon"><i class="bi bi-patch-question-fill"></i></div>
+            <div>
+              <span class="quiz-title">{{ q.title }}</span>
+              <span class="quiz-qcount">{{ q.questions.length || 'No' }} questions</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="subject-pill">{{ q.subjectName }}</span><span class="class-text">{{ q.className }}</span></td>
+        <td><span class="duration-badge"><i class="bi bi-clock me-1"></i>{{ q.duration }} min</span></td>
+        <td>
+          <div class="marks-cell">
+            <span class="total-marks">{{ q.totalMarks }} pts</span>
+            <span class="pass-marks">Pass: {{ q.passingMarks }}</span>
+          </div>
+        </td>
+        <td><span class="attempts-val">{{ q.attempts | number }}</span></td>
+        <td><span class="status-badge" [class.published]="q.isPublished">{{ q.isPublished ? 'Published' : 'Draft' }}</span></td>
+        <td>
+          <div class="action-group">
+            <button class="btn-icon edit"   (click)="openEdit(q)"><i class="bi bi-pencil"></i></button>
+            <button class="btn-icon" [class.toggle-on]="q.isPublished" [class.toggle-off]="!q.isPublished" (click)="togglePublish(q)">
+              <i [class]="'bi ' + (q.isPublished ? 'bi-eye-slash' : 'bi-eye')"></i>
+            </button>
+            <button class="btn-icon view"><i class="bi bi-bar-chart-line"></i></button>
+            <button class="btn-icon delete" (click)="delete(q._id)"><i class="bi bi-trash3"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading quizzes...</p>
+  </div>
+
+  <div *ngIf="filtered.length === 0 && !loading" class="empty-state">
+    <i class="bi bi-patch-question"></i><h4>No quizzes found</h4><p>Create adaptive quizzes for your students</p>
+    <button class="btn-primary" (click)="openAdd()">Create Quiz</button>
+  </div>
+</div>
+
+<!-- ===== Create/Edit Modal ===== -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="close()">
+  <div class="modal-box xlarge" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Quiz' : 'Create New Quiz' }}</h5>
+      <button class="modal-close" (click)="close()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-bar">
+      <div *ngFor="let step of [1,2,3]" class="step-item" [class.active]="activeStep() === step" [class.done]="activeStep() > step">
+        <div class="step-circle">
+          <i *ngIf="activeStep() > step" class="bi bi-check-lg"></i>
+          <span *ngIf="activeStep() <= step">{{ step }}</span>
+        </div>
+        <span class="step-label">{{ step === 1 ? 'Quiz Details' : step === 2 ? 'Questions' : 'Settings' }}</span>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Step 1: Details -->
+      <div *ngIf="activeStep() === 1">
+        <div class="form-group">
+          <label class="form-label">Quiz Title <span class="required">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="current.title" placeholder="e.g. Mathematics Mid-Term Test" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="current.className" [disabled]="classes.length === 0">
+              <option value="">{{ classes.length === 0 ? 'Loading classes...' : 'Select Class' }}</option>
+              <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="current.subjectName" [disabled]="subjects.length === 0">
+              <option value="">{{ subjects.length === 0 ? 'Loading subjects...' : 'Select Subject' }}</option>
+              <option *ngFor="let s of subjects" [value]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Duration (minutes)</label>
+            <input type="number" class="form-control" [(ngModel)]="current.duration" min="5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Marks (auto-calculated)</label>
+            <input type="number" class="form-control" [value]="totalQuizMarks || current.totalMarks" readonly style="background:#f9fafb; cursor:not-allowed" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Questions Builder -->
+      <div *ngIf="activeStep() === 2">
+        <div class="questions-header">
+          <div>
+            <h6>Questions <span class="q-count-badge">{{ questions.length }}</span></h6>
+            <small class="text-muted">Total marks: {{ totalQuizMarks }} pts</small>
+          </div>
+          <button class="btn-add-question" (click)="openAddQuestion()" *ngIf="!showQuestionForm">
+            <i class="bi bi-plus-lg me-1"></i>Add Question
+          </button>
+        </div>
+
+        <!-- Question Form -->
+        <div *ngIf="showQuestionForm" class="question-form-box">
+          <div class="qf-header">
+            <h6>{{ editingQIndex > -1 ? 'Edit Question' : 'New Question' }}</h6>
+            <button class="btn-close-qf" (click)="showQuestionForm=false"><i class="bi bi-x"></i></button>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Question Type</label>
+              <select class="form-control" [(ngModel)]="editingQuestion.type">
+                <option value="mcq">Multiple Choice (MCQ)</option>
+                <option value="true_false">True / False</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Difficulty</label>
+              <select class="form-control" [(ngModel)]="editingQuestion.difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Question Text <span class="required">*</span></label>
+            <textarea 
+              #questionText
+              class="form-control" 
+              [(ngModel)]="editingQuestion.question" 
+              (keydown.enter)="moveToNextInput('question')"
+              rows="2" 
+              placeholder="Enter the question..."></textarea>
+          </div>
+
+          <!-- MCQ Options -->
+          <div *ngIf="editingQuestion.type === 'mcq'" class="options-list">
+            <label class="form-label">Answer Options</label>
+            <div *ngFor="let opt of editingQuestion.options; let i = index; trackBy: trackByIndex" class="option-row">
+              <div class="option-selector" [class.correct]="editingQuestion.correctAnswer === i" (click)="editingQuestion.correctAnswer = i">
+                <i [class]="'bi ' + (editingQuestion.correctAnswer === i ? 'bi-check-circle-fill' : 'bi-circle')"></i>
+              </div>
+              <input
+                #optionInput
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingQuestion.options![i]"
+               (keydown.enter)="$event.preventDefault(); onEnterOption(i, optionInput.value)"
+                [placeholder]="'Option ' + (i+1)" />
+            </div>
+          </div>
+
+          <!-- True/False -->
+          <div *ngIf="editingQuestion.type === 'true_false'" class="tf-options">
+            <label class="form-label">Correct Answer</label>
+            <div class="tf-btns">
+              <button type="button" class="tf-btn" [class.active]="editingQuestion.correctAnswer === 0" (click)="editingQuestion.correctAnswer = 0">✅ True</button>
+              <button type="button" class="tf-btn" [class.active]="editingQuestion.correctAnswer === 1" (click)="editingQuestion.correctAnswer = 1">❌ False</button>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top:.75rem">
+            <div class="form-group">
+              <label class="form-label">Marks</label>
+              <input 
+                #marksInput
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="editingQuestion.marks" 
+                (keydown.enter)="moveToNextInput('marks')"
+                min="1" 
+                max="10" 
+                placeholder="Marks" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Explanation (optional)</label>
+              <input 
+                #explanationInput
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="editingQuestion.explanation" 
+                placeholder="Why this answer?" />
+            </div>
+          </div>
+          <div class="qf-actions">
+            <button type="button" class="btn-cancel" (click)="showQuestionForm=false">Cancel</button>
+            <button type="button" class="btn-primary" (click)="saveQuestion()" [disabled]="!editingQuestion.question || !editingQuestion.marks">
+              {{ editingQIndex > -1 ? 'Update Question' : 'Add Question' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Question List -->
+        <div class="question-list" *ngIf="questions.length > 0">
+          <div *ngFor="let q of questions; let i = index" class="question-item">
+            <div class="qi-num">{{ i + 1 }}</div>
+            <div class="qi-content">
+              <p class="qi-text">{{ q.question }}</p>
+              <div class="qi-meta">
+                <span class="qi-type" [class]="q.type">{{ q.type === 'mcq' ? 'MCQ' : 'True/False' }}</span>
+                <span class="qi-diff" [class]="q.difficulty">{{ q.difficulty }}</span>
+                <span class="qi-marks">{{ q.marks }} pt{{ q.marks > 1 ? 's' : '' }}</span>
+              </div>
+            </div>
+            <div class="qi-actions">
+              <button class="btn-icon edit" (click)="openEditQuestion(q, i)"><i class="bi bi-pencil"></i></button>
+              <button class="btn-icon delete" (click)="removeQuestion(i)"><i class="bi bi-trash3"></i></button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="questions.length === 0 && !showQuestionForm" class="no-questions">
+          <i class="bi bi-patch-question"></i>
+          <p>No questions yet. Click "Add Question" to begin.</p>
+        </div>
+      </div>
+
+      <!-- Step 3: Settings -->
+      <div *ngIf="activeStep() === 3">
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="form-label">Passing Marks</label>
+            <input type="number" class="form-control" [(ngModel)]="current.passingMarks" [max]="totalQuizMarks" />
+            <small class="hint">Out of {{ totalQuizMarks }} total marks</small>
+          </div>
+          <div class="setting-item">
+            <label class="form-label">Duration (minutes)</label>
+            <input type="number" class="form-control" [(ngModel)]="current.duration" min="5" />
+          </div>
+        </div>
+        <div class="form-group mt-2">
+          <label class="form-label">Publish Quiz</label>
+          <div class="toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="current.isPublished" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span>{{ current.isPublished ? 'Published — visible to students' : 'Draft — hidden from students' }}</span>
+          </div>
+        </div>
+        <div class="quiz-summary-card">
+          <div class="qs-item"><i class="bi bi-list-ol"></i><span>{{ questions.length }} Questions</span></div>
+          <div class="qs-item"><i class="bi bi-trophy"></i><span>{{ totalQuizMarks }} Total Marks</span></div>
+          <div class="qs-item"><i class="bi bi-clock"></i><span>{{ current.duration }} Minutes</span></div>
+          <div class="qs-item"><i class="bi bi-check-circle"></i><span>Pass: {{ current.passingMarks }} Marks</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer Nav -->
+    <div class="modal-footer-nav">
+      <button *ngIf="activeStep() > 1" class="btn-cancel" (click)="prevStep()">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </button>
+      <span class="step-indicator">Step {{ activeStep() }} of 3</span>
+      <button *ngIf="activeStep() < 3" class="btn-primary" (click)="nextStep()">
+        Next <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+      <button *ngIf="activeStep() === 3" class="btn-primary" (click)="onSubmit()" [disabled]="submitting">
+        <span *ngIf="!submitting">{{ editMode() ? 'Update Quiz' : 'Create Quiz' }}</span>
+        <span *ngIf="submitting"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+      </button>
+    </div>
+  </div>
+</div>

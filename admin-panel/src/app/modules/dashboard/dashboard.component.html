@@ -1,0 +1,276 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Welcome to DRS Education Admin — overview of your platform</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn-outline-primary">
+      <i class="bi bi-download me-2"></i>Export Report
+    </button>
+    <button class="btn-primary">
+      <i class="bi bi-plus me-2"></i>Quick Add
+    </button>
+  </div>
+</div>
+
+<!-- KPI Stats Row -->
+<div class="stats-grid">
+  <div class="stat-card primary">
+    <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+    <div class="stat-content">
+      <span class="stat-label">Total Students</span>
+      <span class="stat-value">{{ stats().totalStudents | number }}</span>
+      <span class="stat-change positive"><i class="bi bi-arrow-up"></i> +12% this month</span>
+    </div>
+  </div>
+  <div class="stat-card success">
+    <div class="stat-icon"><i class="bi bi-person-workspace"></i></div>
+    <div class="stat-content">
+      <span class="stat-label">Teachers</span>
+      <span class="stat-value">{{ stats().totalTeachers }}</span>
+      <span class="stat-change positive"><i class="bi bi-arrow-up"></i> +3 this month</span>
+    </div>
+  </div>
+  <div class="stat-card warning">
+    <div class="stat-icon"><i class="bi bi-play-circle-fill"></i></div>
+    <div class="stat-content">
+      <span class="stat-label">Total Videos</span>
+      <span class="stat-value">{{ stats().totalVideos }}</span>
+      <span class="stat-change positive"><i class="bi bi-arrow-up"></i> +24 this week</span>
+    </div>
+  </div>
+  <div class="stat-card info">
+    <div class="stat-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+    <div class="stat-content">
+      <span class="stat-label">Study Materials</span>
+      <span class="stat-value">{{ stats().totalPDFs }}</span>
+      <span class="stat-change positive"><i class="bi bi-arrow-up"></i> +18 this week</span>
+    </div>
+  </div>
+</div>
+
+<!-- Second Stats Row -->
+<div class="stats-grid stats-grid-secondary">
+  <div class="stat-mini">
+    <div class="stat-mini-icon blue"><i class="bi bi-building"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().totalClasses }}</span>
+      <span class="stat-mini-label">Classes</span>
+    </div>
+  </div>
+  <div class="stat-mini">
+    <div class="stat-mini-icon purple"><i class="bi bi-book"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().totalSubjects }}</span>
+      <span class="stat-mini-label">Subjects</span>
+    </div>
+  </div>
+  <div class="stat-mini">
+    <div class="stat-mini-icon orange"><i class="bi bi-patch-question"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().totalQuizzes }}</span>
+      <span class="stat-mini-label">Quizzes</span>
+    </div>
+  </div>
+  <div class="stat-mini">
+    <div class="stat-mini-icon green"><i class="bi bi-activity"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().activeStudentsToday }}</span>
+      <span class="stat-mini-label">Active Today</span>
+    </div>
+  </div>
+  <div class="stat-mini">
+    <div class="stat-mini-icon teal"><i class="bi bi-eye"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().videoViewsToday | number }}</span>
+      <span class="stat-mini-label">Views Today</span>
+    </div>
+  </div>
+  <div class="stat-mini">
+    <div class="stat-mini-icon red"><i class="bi bi-trophy"></i></div>
+    <div>
+      <span class="stat-mini-value">{{ stats().averageQuizScore }}%</span>
+      <span class="stat-mini-label">Avg Quiz Score</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="content-grid">
+
+  <!-- Recent Activity -->
+  <div class="card activity-card">
+    <div class="card-header">
+      <h5 class="card-title"><i class="bi bi-activity me-2"></i>Recent Activity</h5>
+      <a href="#" class="view-all">View all</a>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let activity of recentActivities()" class="activity-item">
+        <div [class]="'activity-icon type-' + activity.type">
+          <i [class]="'bi ' + activity.icon"></i>
+        </div>
+        <div class="activity-content">
+          <p>{{ activity.text }}</p>
+          <small>{{ activity.time }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card quick-actions-card">
+    <div class="card-header">
+      <h5 class="card-title"><i class="bi bi-lightning me-2"></i>Quick Actions</h5>
+    </div>
+    <div class="card-body">
+      <div class="quick-actions-grid">
+        <a routerLink="/classes" class="quick-action">
+          <div class="qa-icon blue"><i class="bi bi-building"></i></div>
+          <span>Add Class</span>
+        </a>
+        <a routerLink="/subjects" class="quick-action">
+          <div class="qa-icon purple"><i class="bi bi-book"></i></div>
+          <span>Add Subject</span>
+        </a>
+        <a routerLink="/videos" class="quick-action">
+          <div class="qa-icon orange"><i class="bi bi-camera-video"></i></div>
+          <span>Upload Video</span>
+        </a>
+        <a routerLink="/pdfs" class="quick-action">
+          <div class="qa-icon red"><i class="bi bi-file-earmark-pdf"></i></div>
+          <span>Add Material</span>
+        </a>
+        <a routerLink="/students" class="quick-action">
+          <div class="qa-icon green"><i class="bi bi-person-plus"></i></div>
+          <span>Add Student</span>
+        </a>
+        <a routerLink="/quizzes" class="quick-action">
+          <div class="qa-icon teal"><i class="bi bi-patch-question"></i></div>
+          <span>Create Quiz</span>
+        </a>
+        <a routerLink="/announcements" class="quick-action">
+          <div class="qa-icon yellow"><i class="bi bi-megaphone"></i></div>
+          <span>Announce</span>
+        </a>
+        <a routerLink="/reports" class="quick-action">
+          <div class="qa-icon indigo"><i class="bi bi-bar-chart"></i></div>
+          <span>Reports</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Videos -->
+  <div class="card top-videos-card">
+    <div class="card-header">
+      <h5 class="card-title"><i class="bi bi-trophy me-2"></i>Top Performing Videos</h5>
+      <a routerLink="/videos" class="view-all">View all</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Video Title</th>
+            <th>Subject</th>
+            <th>Views</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let video of topVideos(); let i = index">
+            <td><span class="rank-badge">{{ i + 1 }}</span></td>
+            <td>
+              <div class="video-title-cell">
+                <div class="video-thumb"><i class="bi bi-play-fill"></i></div>
+                <div>
+                  <span class="video-name">{{ video.title }}</span>
+                  <span class="video-duration">{{ video.duration }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="subject-badge">{{ video.subject }}</span></td>
+            <td>
+              <div class="views-cell">
+                <div class="progress-bar-mini">
+                  <div class="progress-fill" [style.width]="getProgressWidth(video.views, 1400)"></div>
+                </div>
+                <span>{{ video.views | number }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="rating-cell">
+                <i class="bi bi-star-fill text-warning"></i>
+                <span>{{ video.rating }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Platform Stats -->
+  <div class="card platform-stats-card">
+    <div class="card-header">
+      <h5 class="card-title"><i class="bi bi-graph-up me-2"></i>Platform Overview</h5>
+    </div>
+    <div class="card-body">
+      <div class="platform-stat-item">
+        <div class="ps-info">
+          <span class="ps-label">Student Engagement Rate</span>
+          <span class="ps-value text-success">78%</span>
+        </div>
+        <div class="progress-bar-full">
+          <div class="progress-fill success" style="width: 78%"></div>
+        </div>
+      </div>
+      <div class="platform-stat-item">
+        <div class="ps-info">
+          <span class="ps-label">Video Completion Rate</span>
+          <span class="ps-value text-primary">64%</span>
+        </div>
+        <div class="progress-bar-full">
+          <div class="progress-fill primary" style="width: 64%"></div>
+        </div>
+      </div>
+      <div class="platform-stat-item">
+        <div class="ps-info">
+          <span class="ps-label">Quiz Pass Rate</span>
+          <span class="ps-value text-warning">72%</span>
+        </div>
+        <div class="progress-bar-full">
+          <div class="progress-fill warning" style="width: 72%"></div>
+        </div>
+      </div>
+      <div class="platform-stat-item">
+        <div class="ps-info">
+          <span class="ps-label">Content Coverage</span>
+          <span class="ps-value text-info">89%</span>
+        </div>
+        <div class="progress-bar-full">
+          <div class="progress-fill info" style="width: 89%"></div>
+        </div>
+      </div>
+      <div class="platform-stat-item">
+        <div class="ps-info">
+          <span class="ps-label">Mobile App Usage</span>
+          <span class="ps-value text-danger">81%</span>
+        </div>
+        <div class="progress-bar-full">
+          <div class="progress-fill danger" style="width: 81%"></div>
+        </div>
+      </div>
+
+      <div class="total-watch-time">
+        <div class="twt-icon"><i class="bi bi-clock-history"></i></div>
+        <div>
+          <span class="twt-value">{{ stats().totalWatchTimeHours | number }}</span>
+          <span class="twt-label">Total hours watched across platform</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

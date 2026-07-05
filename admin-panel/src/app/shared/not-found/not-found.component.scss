@@ -1,0 +1,15 @@
+.not-found-page {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#f5f8fa,#e9ecef);
+}
+.nf-content { text-align:center; padding:2rem; }
+.nf-code { font-size:8rem; font-weight:900; color:#eff2f5; line-height:1; margin-bottom:-1rem; }
+.nf-icon { font-size:4rem; display:block; margin-bottom:1rem; }
+.nf-title { font-size:2rem; font-weight:800; color:#181c32; margin:0 0 .75rem; }
+.nf-desc { color:#a1a5b7; font-size:1rem; margin:0 0 2rem; }
+.nf-btn {
+  display:inline-flex; align-items:center; background:linear-gradient(135deg,#4e73df,#1cc88a);
+  color:#fff; padding:.75rem 1.75rem; border-radius:10px; text-decoration:none;
+  font-size:.9rem; font-weight:700; transition:all .2s;
+  &:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(78,115,223,.4); }
+}

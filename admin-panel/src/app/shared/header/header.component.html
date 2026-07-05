@@ -1,0 +1,86 @@
+<header class="drs-header">
+  <!-- Left: Hamburger + Breadcrumb -->
+  <div class="header-left">
+    <button class="btn-toggle" (click)="onToggle()" aria-label="Toggle sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="page-info">
+      <span class="page-welcome">Welcome back,</span>
+      <span class="page-user">{{ authService.currentUser()?.name || 'Admin' }}</span>
+    </div>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="header-right">
+    <!-- Search -->
+    <div class="header-search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Search students, videos, subjects..." />
+    </div>
+
+    <!-- Notifications -->
+    <div class="header-action" (click)="showNotifications = !showNotifications">
+      <button class="action-btn">
+        <i class="bi bi-bell"></i>
+        <span class="badge-dot" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </button>
+
+      <!-- Notification Dropdown -->
+      <div class="dropdown-panel notifications-panel" *ngIf="showNotifications">
+        <div class="panel-header">
+          <h6>Notifications</h6>
+          <span class="badge bg-primary rounded-pill">{{ unreadCount }} new</span>
+        </div>
+        <div class="panel-body">
+          <div *ngFor="let notif of notifications"
+               class="notif-item"
+               [class.unread]="!notif.read">
+            <div [class]="'notif-dot bg-' + notif.type"></div>
+            <div class="notif-content">
+              <p>{{ notif.message }}</p>
+              <small>{{ notif.time }}</small>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <a href="#">View all notifications</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Menu -->
+    <div class="header-action user-menu" (click)="showUserMenu = !showUserMenu">
+      <div class="user-avatar">
+        <img *ngIf="authService.currentUser()?.avatar"
+             [src]="authService.currentUser()?.avatar" alt="User" />
+        <span *ngIf="!authService.currentUser()?.avatar">
+          {{ (authService.currentUser()?.name || 'A')[0] }}
+        </span>
+      </div>
+
+      <!-- User Dropdown -->
+      <div class="dropdown-panel user-panel" *ngIf="showUserMenu">
+        <div class="user-info">
+          <div class="user-avatar large">
+            <span>{{ (authService.currentUser()?.name || 'A')[0] }}</span>
+          </div>
+          <div>
+            <strong>{{ authService.currentUser()?.name }}</strong>
+            <small class="d-block text-muted">{{ authService.currentUser()?.email }}</small>
+          </div>
+        </div>
+        <div class="panel-divider"></div>
+        <a routerLink="/settings" class="dropdown-item">
+          <i class="bi bi-gear"></i> Settings
+        </a>
+        <a href="#" class="dropdown-item">
+          <i class="bi bi-person"></i> My Profile
+        </a>
+        <div class="panel-divider"></div>
+        <button class="dropdown-item text-danger" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

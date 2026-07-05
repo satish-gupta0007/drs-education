@@ -1,0 +1,226 @@
+<div class="courses-header">
+
+  <!-- Search -->
+  <div class="search-box">
+    <ion-icon name="search-outline"></ion-icon>
+    <input
+      type="text"
+      placeholder="Search courses..."
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <!-- Segment -->
+  <div class="segment-box">
+    <button
+      [class.active]="selectedSegment() === 'enrolled'"
+      (click)="setSegment('enrolled')">
+      Enrolled ({{ enrolledCount() }})
+    </button>
+
+    <button
+      [class.active]="selectedSegment() === 'available'"
+      (click)="setSegment('available')">
+      Available
+    </button>
+  </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- ENROLLED COURSES -->
+<!-- ============================= -->
+
+<div
+  class="section"
+  *ngIf="selectedSegment() === 'enrolled'"
+>
+
+  <div
+    class="course-card"
+    *ngFor="let course of filteredCourses(); trackBy: trackByCourse"
+    (click)="goToCourse(course.id)"
+  >
+
+    <!-- Left Icon -->
+    <div
+      class="course-icon"
+      [style.background]="course.color || '#4f6df5'"
+    >
+      <ion-icon name="book-outline"></ion-icon>
+    </div>
+
+    <!-- Content -->
+    <div class="course-content">
+
+      <div class="course-title-row">
+
+        <div class="course-title-area">
+          <h3>{{ course.name }}</h3>
+          <p>{{ course.teacherName || course.className }}</p>
+        </div>
+
+        <button
+          class="fav-btn"
+          [class.active]="course.isFavorite"
+          (click)="toggleFavorite(course,$event)"
+        >
+          <ion-icon name="star-outline"></ion-icon>
+        </button>
+
+      </div>
+
+      <p class="course-description">
+        {{ course.description || 'No description available' }}
+      </p>
+
+      <div class="course-meta">
+
+        <span>
+          <ion-icon name="school-outline"></ion-icon>
+          {{ course.className }}
+        </span>
+
+        <span>
+          <ion-icon name="time-outline"></ion-icon>
+          {{ course.progress || 0 }}%
+        </span>
+
+      </div>
+
+      <div class="progress-row">
+
+        <div class="progress-bar">
+
+          <div
+            class="progress-fill"
+            [style.width]="(course.progress || 0)+'%'"
+            [style.background]="getProgressColor(course.progress || 0)">
+          </div>
+
+        </div>
+
+        <span class="progress-text">
+          {{ course.progress || 0 }}%
+        </span>
+
+      </div>
+
+      <div class="course-buttons">
+
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="toggleEnrollment(course,$event,false)"
+        >
+          Unenroll
+        </button>
+
+      </div>
+
+    </div>
+
+    <ion-icon
+      class="course-arrow"
+      name="chevron-forward"
+    ></ion-icon>
+
+  </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- AVAILABLE COURSES -->
+<!-- ============================= -->
+
+<div
+  class="section"
+  *ngIf="selectedSegment() === 'available'"
+>
+
+  <div
+    class="course-card"
+    *ngFor="let course of filteredCourses(); trackBy: trackByCourse"
+  >
+
+    <!-- Left Icon -->
+    <div
+      class="course-icon"
+      [style.background]="course.color || '#4f6df5'"
+    >
+      <ion-icon name="book-outline"></ion-icon>
+    </div>
+
+    <!-- Content -->
+    <div class="course-content">
+
+      <div class="course-title-row">
+
+        <div class="course-title-area">
+          <h3>{{ course.name }}</h3>
+          <p>{{ course.teacherName || course.className }}</p>
+        </div>
+
+      </div>
+
+      <p class="course-description">
+        {{ course.description || 'No description available' }}
+      </p>
+
+      <div class="course-meta">
+
+        <span>
+          <ion-icon name="school-outline"></ion-icon>
+          {{ course.className }}
+        </span>
+
+        <span>
+          <ion-icon name="time-outline"></ion-icon>
+          {{ course.progress || 0 }}%
+        </span>
+
+      </div>
+
+      <div class="progress-row">
+
+        <div class="progress-bar">
+
+          <div
+            class="progress-fill"
+            [style.width]="(course.progress || 0)+'%'"
+            [style.background]="getProgressColor(course.progress || 0)">
+          </div>
+
+        </div>
+
+        <span class="progress-text">
+          {{ course.progress || 0 }}%
+        </span>
+
+      </div>
+
+      <div class="course-buttons">
+
+        <button
+          class="btn-primary"
+          type="button"
+          (click)="enrollCourse(course,$event)"
+        >
+          Enroll
+        </button>
+
+        <button
+          class="btn-outline"
+          type="button"
+          (click)="goToCourse(course.id)"
+        >
+          View Course
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

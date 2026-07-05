@@ -1,0 +1,95 @@
+<ion-content>
+  <div class="login-container">
+
+    <!-- Brand -->
+    <div class="brand-section">
+      <div class="brand-logo-wrap">
+        <ion-icon name="school-outline"></ion-icon>
+      </div>
+      <h1 class="brand-name">DRS Education</h1>
+      <p class="brand-tagline">Learn Smarter, Achieve More</p>
+    </div>
+
+    <!-- Form -->
+    <div class="form-card">
+      <h2 class="form-title">Welcome Back!</h2>
+      <p class="form-subtitle">Sign in to continue learning</p>
+
+      <!-- Error -->
+      <div class="error-box" *ngIf="errorMessage">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ errorMessage }}
+      </div>
+
+      <!-- FORM -->
+      <form [formGroup]="form">
+
+        <!-- Email -->
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <ion-icon name="mail-outline"></ion-icon>
+
+            <!-- ✅ FIXED -->
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="your@email.com"
+              class="native-input"
+            />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+
+            <!-- ✅ FIXED -->
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter your password"
+              class="native-input"
+            />
+
+            <button type="button" class="pass-toggle"
+              (click)="showPassword = !showPassword">
+              <ion-icon
+                [name]="showPassword ? 'eye-off-outline' : 'eye-outline'">
+              </ion-icon>
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Login -->
+      <button class="btn-login"
+              (click)="onLogin()"
+              [disabled]="loading">
+
+        <ion-spinner *ngIf="loading"></ion-spinner>
+
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading">Signing in...</span>
+      </button>
+
+      <div class="divider">or continue with</div>
+
+      <div class="social-row">
+        <button class="btn-social">
+          <ion-icon name="logo-google"></ion-icon>
+          Google
+        </button>
+
+        <button class="btn-social">
+          <ion-icon name="logo-apple"></ion-icon>
+          Apple
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,148 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Subjects</h1>
+    <p class="page-subtitle">Manage subjects across all classes</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    <i class="bi bi-plus-lg me-2"></i>Add Subject
+  </button>
+</div>
+
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search subjects..." />
+  </div>
+  <select [(ngModel)]="filterClass" class="filter-select">
+    <option value="">All Classes</option>
+    <option *ngFor="let c of classes()" [value]="c.name">{{ c.name }}</option>
+  </select>
+  <span class="results-count">{{ filteredSubjects.length }} subjects</span>
+</div>
+
+<div class="subjects-grid">
+  <div *ngFor="let sub of filteredSubjects" class="subject-card" [class.inactive]="!sub.isActive"
+       [style.--subject-color]="sub.color">
+    <div class="subject-top">
+      <div class="subject-color-bar" [style.background]="sub.color"></div>
+      <div class="subject-header">
+        <div class="subject-icon" [style.background]="sub.color + '22'" [style.color]="sub.color">
+          <i class="bi bi-book-half"></i>
+        </div>
+        <span class="subject-code" [style.color]="sub.color">{{ sub.code }}</span>
+        <span class="subject-status" [class.active]="sub.isActive">
+          {{ sub.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="subject-body">
+      <h3 class="subject-name">{{ sub.name }}</h3>
+      <p class="subject-class"><i class="bi bi-building me-1"></i>{{ sub.className }}</p>
+      <p class="subject-teacher"><i class="bi bi-person me-1"></i>{{ sub.teacherName || 'Not assigned' }}</p>
+
+      <div class="subject-stats">
+        <div class="ss-item">
+          <i class="bi bi-play-circle" [style.color]="sub.color"></i>
+          <span>{{ sub.videoCount }}</span>
+          <small>Videos</small>
+        </div>
+        <div class="ss-divider"></div>
+        <div class="ss-item">
+          <i class="bi bi-file-earmark-pdf" [style.color]="sub.color"></i>
+          <span>{{ sub.pdfCount }}</span>
+          <small>PDFs</small>
+        </div>
+        <div class="ss-divider"></div>
+        <div class="ss-item">
+          <i class="bi bi-patch-question" [style.color]="sub.color"></i>
+          <span>{{ sub.quizCount }}</span>
+          <small>Quizzes</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="subject-footer">
+      <button class="btn-icon edit" (click)="openEditModal(sub)"><i class="bi bi-pencil"></i></button>
+      <button class="btn-icon toggle" (click)="toggleStatus(sub)" [title]="sub.isActive ? 'Deactivate' : 'Activate'">
+        <i [class]="'bi ' + (sub.isActive ? 'bi-toggle-on' : 'bi-toggle-off')"></i>
+      </button>
+      <button class="btn-icon delete" (click)="deleteSubject(sub.id)"><i class="bi bi-trash3"></i></button>
+    </div>
+  </div>
+
+  <div *ngIf="filteredSubjects.length === 0" class="empty-state">
+    <i class="bi bi-book"></i><h4>No subjects found</h4>
+    <p>Add subjects to your classes</p>
+    <button class="btn-primary" (click)="openAddModal()">Add Subject</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Subject' : 'Add New Subject' }}</h5>
+      <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #form="ngForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Subject Name <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="currentSubject.name" name="name" placeholder="e.g. Mathematics" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject Code <span class="required">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="currentSubject.code" name="code" placeholder="e.g. MATH10" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentSubject.classId" name="classId" required>
+              <option value="">Select Class</option>
+              <option *ngFor="let c of classes()" [value]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned Teacher</label>
+            <input type="text" class="form-control" [(ngModel)]="currentSubject.teacherName" name="teacherName" placeholder="e.g. Mr. Patel" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" [(ngModel)]="currentSubject.description" name="description" rows="2" placeholder="Short description of this subject..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject Color</label>
+          <div class="color-picker">
+            <div *ngFor="let color of subjectColors" class="color-dot"
+                 [style.background]="color"
+                 [class.selected]="currentSubject.color === color"
+                 (click)="currentSubject.color = color">
+              <i *ngIf="currentSubject.color === color" class="bi bi-check"></i>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="currentSubject.isActive" name="isActive" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span>{{ currentSubject.isActive ? 'Active' : 'Inactive' }}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting || !canSubmit()">
+            <span *ngIf="!submitting">{{ editMode() ? 'Update' : 'Create Subject' }}</span>
+            <span *ngIf="submitting"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

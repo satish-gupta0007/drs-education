@@ -1,0 +1,42 @@
+/* Ionic Variables and Theming */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+:root {
+  --ion-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --ion-color-primary: #4e73df;
+  --ion-color-primary-rgb: 78, 115, 223;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #4465c9;
+  --ion-color-primary-tint: #6081e2;
+  --ion-color-success: #1cc88a;
+  --ion-color-warning: #f6c23e;
+  --ion-color-danger: #f1416c;
+  --ion-background-color: #f5f8fa;
+  --ion-text-color: #181c32;
+  --ion-toolbar-background: #1a2035;
+  --ion-toolbar-color: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--ion-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+ion-header ion-toolbar {
+  --background: #1a2035;
+  --color: #fff;
+  --border-color: transparent;
+}
+
+::-webkit-scrollbar { display: none; }

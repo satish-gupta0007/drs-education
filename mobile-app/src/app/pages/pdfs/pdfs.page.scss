@@ -1,0 +1,17 @@
+.pdfs-content { --background:#f5f8fa; }
+.pdfs-search-wrap { background:#1a2035; padding:0 16px 16px; }
+.pdfs-searchbar { --background:rgba(255,255,255,0.12); --color:#fff; --placeholder-color:rgba(255,255,255,0.5); --icon-color:rgba(255,255,255,0.5); --border-radius:12px; --box-shadow:none; padding:0; }
+.type-chips-row { display:flex; gap:8px; padding:12px 16px; overflow-x:auto; scrollbar-width:none; &::-webkit-scrollbar{ display:none; } }
+.type-chip { padding:6px 14px; border-radius:20px; border:1.5px solid #eff2f5; background:#fff; font-size:13px; font-weight:600; color:#7e8299; cursor:pointer; white-space:nowrap; flex-shrink:0; &.active{ background:var(--tc,#4e73df); color:#fff; border-color:var(--tc,#4e73df); } }
+.pdfs-list { padding:4px 16px; display:flex; flex-direction:column; gap:10px; }
+.pdf-card { background:#fff; border-radius:14px; padding:14px; display:flex; align-items:flex-start; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.pc-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; ion-icon{ font-size:24px; } }
+.pc-info { flex:1; min-width:0; }
+.pc-title { font-size:14px; font-weight:700; color:#181c32; margin:0 0 6px; line-height:1.4; }
+.pc-meta { display:flex; align-items:center; gap:6px; margin-bottom:5px; flex-wrap:wrap; }
+.pc-type-chip { padding:.15rem .5rem; border-radius:4px; font-size:11px; font-weight:700; }
+.pc-subject { font-size:12px; font-weight:600; }
+.pc-detail { display:flex; gap:5px; font-size:12px; color:#a1a5b7; }
+.pc-actions { display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+.pc-action-btn { width:34px; height:34px; border-radius:10px; border:1.5px solid #eff2f5; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; ion-icon{ font-size:18px; color:#a1a5b7; } &.save.saved ion-icon{ color:#f6c23e; } &.download.downloaded{ background:rgba(28,200,138,0.1); border-color:rgba(28,200,138,0.2); ion-icon{ color:#1cc88a; } } }
+.empty-state { text-align:center; padding:60px 24px; .es-icon{ font-size:64px; display:block; margin-bottom:16px; } h4{ font-size:18px; font-weight:800; color:#181c32; margin:0 0 8px; } p{ font-size:14px; color:#a1a5b7; margin:0; } }

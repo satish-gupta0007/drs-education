@@ -1,0 +1,54 @@
+# Ionic
+platforms/
+plugins/
+www/
+resources/
+ios/
+android/
+.gradle/
+.m2/
+
+# Angular
+/.angular
+/angular
+/dist
+/tmp
+/out-tsc
+.angular/cache/
+
+# Capacitor
+capacitor.config.json
+capacitor.config.ts (generated)
+
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-error.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Testing
+/coverage
+.nyc_output
+
+# Build
+/build
+*.js.map
+
+# Logs
+logs/
+*.log

@@ -1,0 +1,240 @@
+<ion-content class="home-content" [scrollEvents]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Header -->
+  <div class="home-header">
+    <div class="header-top">
+      <div class="greeting-section">
+        <p class="greeting-text">{{ greeting() }},</p>
+        <h2 class="user-name">{{ authService.currentUser()?.name || 'Student' }} 👋</h2>
+      </div>
+      <div class="header-actions">
+        <button class="notif-btn" routerLink="/tabs/notifications">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="notif-badge" *ngIf="unreadNotifications() > 0">
+            {{ unreadNotifications() }}
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <ion-searchbar
+        placeholder="Search videos, subjects, topics..."
+        [animated]="true"
+        class="drs-searchbar">
+      </ion-searchbar>
+    </div>
+  </div>
+
+  <!-- Stats Strip -->
+  <div class="stats-strip">
+    <div class="streak-card">
+      <div class="streak-flame">
+        <ion-icon name="flame-outline"></ion-icon>
+      </div>
+      <div>
+        <span class="streak-count">{{ currentStreak() }} Days</span>
+        <span class="streak-label">Study Streak</span>
+      </div>
+    </div>
+
+    <div class="stats-divider"></div>
+
+    <div class="mini-stat">
+      <ion-icon name="play-circle-outline"></ion-icon>
+      <div>
+        <span class="mini-value">48</span>
+        <span class="mini-label">Videos Done</span>
+      </div>
+    </div>
+
+    <div class="stats-divider"></div>
+
+    <div class="mini-stat">
+      <ion-icon name="trophy-outline"></ion-icon>
+      <div>
+        <span class="mini-value">78%</span>
+        <span class="mini-label">Quiz Score</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Activity -->
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">Weekly Activity</h3>
+      <a class="see-all">This Week</a>
+    </div>
+
+    <div class="activity-chart">
+      <div
+        *ngFor="let val of weeklyActivity(); let i = index"
+        class="activity-bar-wrap">
+
+        <div
+          class="activity-bar"
+          [style.height]="val + '%'"
+          [class.today]="i === 6">
+        </div>
+
+        <span class="activity-day">{{ weekDays[i] }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcements -->
+  <div class="section" *ngIf="announcements().length > 0">
+    <div class="section-header">
+      <h3 class="section-title">Announcements</h3>
+    </div>
+
+    <div
+      *ngFor="let ann of announcements(); trackBy: trackById"
+      class="announcement-card"
+      [class.unread]="!ann.isRead">
+
+      <div [class]="'ann-type-dot type-' + ann.type"></div>
+
+      <div class="ann-content">
+        <div class="ann-header">
+          <span class="ann-title">{{ ann.title }}</span>
+          <span *ngIf="ann.isPinned" class="pin-badge">📌</span>
+        </div>
+
+        <p class="ann-text">{{ ann.content }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Courses -->
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">My Courses</h3>
+      <a class="see-all" (click)="router.navigate(['/tabs/courses'])">
+        See All
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </a>
+    </div>
+
+    <div class="courses-scroll">
+      <div
+        *ngFor="let course of featuredCourses(); trackBy: trackById"
+        class="course-card"
+        (click)="goToCourse(course.id)"
+        [style.--course-color]="course.color">
+
+        <div class="course-header">
+          <div
+            class="course-icon"
+            [style.background]="course.color + '22'">
+
+            <ion-icon
+              name="book-outline"
+              [style.color]="course.color">
+            </ion-icon>
+          </div>
+
+          <div class="course-fav" [class.active]="course.isFavorite">
+            <ion-icon name="star-outline"></ion-icon>
+          </div>
+        </div>
+
+        <h4 class="course-name">{{ course.name }}</h4>
+        <p class="course-class">{{ course.className }}</p>
+        <p class="course-teacher">{{ course.teacherName }}</p>
+
+        <div class="course-meta">
+          <span>
+            <ion-icon name="play-circle-outline"></ion-icon>
+            {{ course.videoCount }}
+          </span>
+          <span>
+            <ion-icon name="book-outline"></ion-icon>
+            {{ course.pdfCount }}
+          </span>
+        </div>
+
+        <div class="course-progress-wrap">
+          <div class="cp-header">
+            <span>Progress</span>
+            <span [style.color]="getProgressColor(course.progress)">
+              {{ course.progress }}%
+            </span>
+          </div>
+
+          <div class="cp-track">
+            <div
+              class="cp-fill"
+              [style.width]="course.progress + '%'"
+              [style.background]="course.color">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Continue Watching -->
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">Continue Watching</h3>
+      <a class="see-all" (click)="router.navigate(['/tabs/videos'])">
+        See All
+      </a>
+    </div>
+
+    <div
+      *ngFor="let video of recentVideos(); trackBy: trackById"
+      class="video-row-card"
+      (click)="goToVideo(video.id)">
+
+      <div class="vrc-thumb">
+        <div class="thumb-bg">
+          <ion-icon name="play-circle-outline"></ion-icon>
+        </div>
+
+        <span class="vrc-duration">
+          {{ formatDuration(video.duration) }}
+        </span>
+
+        <div *ngIf="video.isDownloaded" class="download-badge">
+          <ion-icon name="download-outline"></ion-icon>
+        </div>
+      </div>
+
+      <div class="vrc-info">
+        <h5 class="vrc-title">{{ video.title }}</h5>
+
+        <p class="vrc-meta">
+          {{ video.courseName }} • {{ video.teacherName }}
+        </p>
+
+        <div
+          class="vrc-progress"
+          *ngIf="video.watchedDuration > 0 && !video.isWatched">
+
+          <div
+            class="vrc-progress-fill"
+            [style.width]="(video.watchedDuration / video.duration * 100) + '%'">
+          </div>
+        </div>
+
+        <span *ngIf="video.isWatched" class="watched-chip">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Watched
+        </span>
+      </div>
+
+      <div class="vrc-chevron">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom spacing -->
+  <div style="height: 80px"></div>
+</ion-content>

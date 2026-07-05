@@ -1,0 +1,90 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content">
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">{{ getInitials(student()?.name || '') }}</div>
+      <div class="edit-avatar-btn"><ion-icon name="settings-outline"></ion-icon></div>
+    </div>
+    <h2 class="profile-name">{{ student()?.name }}</h2>
+    <p class="profile-class">{{ student()?.className }} · {{ student()?.rollNumber }}</p>
+    <p class="profile-email">{{ student()?.email }}</p>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="ps-stat">
+      <span class="ps-val">{{ stats().videosWatched }}</span>
+      <span class="ps-label">Videos</span>
+    </div>
+    <div class="ps-divider"></div>
+    <div class="ps-stat">
+      <span class="ps-val">{{ stats().watchHours }}h</span>
+      <span class="ps-label">Watch Time</span>
+    </div>
+    <div class="ps-divider"></div>
+    <div class="ps-stat">
+      <span class="ps-val">{{ stats().quizScore }}%</span>
+      <span class="ps-label">Avg Score</span>
+    </div>
+    <div class="ps-divider"></div>
+    <div class="ps-stat">
+      <span class="ps-val">🔥{{ stats().streak }}</span>
+      <span class="ps-label">Streak</span>
+    </div>
+  </div>
+
+  <!-- Weekly Activity -->
+  <div class="profile-section">
+    <h3 class="section-title">This Week</h3>
+    <div class="activity-chart">
+      <div *ngFor="let val of weeklyActivity(); let i = index" class="act-bar-wrap">
+        <div class="act-bar" [style.height]="getBarHeight(val)" [class.today]="i === 6"></div>
+        <span class="act-day">{{ weekDays[i] }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="profile-section">
+    <div class="section-header">
+      <h3 class="section-title">My Badges</h3>
+      <span class="badge-count">{{ stats().badges }} earned</span>
+    </div>
+    <div class="badges-row">
+      <div *ngFor="let badge of badges()" class="badge-item" [style.--bcolor]="badge.color">
+        <div class="badge-icon">{{ badge.icon }}</div>
+        <span class="badge-label">{{ badge.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Items -->
+  <div class="profile-section">
+    <div class="menu-card">
+      <div *ngFor="let item of menuItems; let last = last" class="menu-item" [class.last]="last">
+        <div class="menu-item-icon">
+          <ion-icon [name]="item.icon"></ion-icon>
+        </div>
+        <span class="menu-item-label">{{ item.label }}</span>
+        <ion-icon name="chevron-forward-outline" class="menu-chevron"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <div class="profile-section">
+    <button class="btn-logout" (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      Sign Out
+    </button>
+    <p class="app-version">DRS Education v1.0.0</p>
+  </div>
+
+  <div style="height:80px"></div>
+</ion-content>

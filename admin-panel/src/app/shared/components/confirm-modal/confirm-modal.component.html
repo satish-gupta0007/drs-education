@@ -1,0 +1,16 @@
+<div class="modal-overlay" *ngIf="show" (click)="cancelled.emit()">
+  <div class="modal-box confirm-box" (click)="$event.stopPropagation()">
+    <div class="confirm-icon" [class.danger]="confirmType === 'danger'">
+      <i [class]="'bi ' + (confirmType === 'danger' ? 'bi-exclamation-triangle' : 'bi-question-circle')"></i>
+    </div>
+    <h4 class="confirm-title">{{ title }}</h4>
+    <p class="confirm-message">{{ message }}</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" (click)="cancelled.emit()" [disabled]="loading">Cancel</button>
+      <button class="btn-confirm" [class]="'btn-' + confirmType" (click)="confirmed.emit()" [disabled]="loading">
+        <span *ngIf="!loading">{{ confirmLabel }}</span>
+        <span *ngIf="loading"><span class="spinner-border spinner-border-sm me-2"></span>Processing...</span>
+      </button>
+    </div>
+  </div>
+</div>

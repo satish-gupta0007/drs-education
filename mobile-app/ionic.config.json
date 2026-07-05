@@ -1,0 +1,11 @@
+{
+  "name": "drs-education-mobile",
+  "type": "angular",
+  "integrations": {
+    "capacitor": {}
+  },
+  "server": {
+    "host": "localhost",
+    "port": 8100
+  }
+}

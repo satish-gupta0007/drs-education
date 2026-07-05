@@ -1,0 +1,295 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Configure your DRS Education platform</p>
+  </div>
+</div>
+
+<div class="settings-layout">
+  <!-- Sidebar Tabs -->
+  <div class="settings-sidebar">
+    <button *ngFor="let tab of tabs" class="settings-tab" [class.active]="activeTab() === tab.id"
+            (click)="activeTab.set(tab.id)">
+      <i [class]="'bi ' + tab.icon"></i>
+      <span>{{ tab.label }}</span>
+      <i class="bi bi-chevron-right ms-auto"></i>
+    </button>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel">
+
+    <!-- Success Banner -->
+    <div class="success-banner" *ngIf="savedTab">
+      <i class="bi bi-check-circle-fill"></i>
+      Settings saved successfully!
+    </div>
+
+    <!-- General Settings -->
+    <div *ngIf="activeTab() === 'general'" class="settings-section">
+      <div class="section-header"><h4>General Settings</h4><p>Basic platform information and configuration</p></div>
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label class="form-label">School / Institute Name</label>
+          <input type="text" class="form-control" [(ngModel)]="general.schoolName" />
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label">Tagline</label>
+          <input type="text" class="form-control" [(ngModel)]="general.tagline" />
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label">Address</label>
+          <textarea class="form-control" [(ngModel)]="general.address" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="text" class="form-control" [(ngModel)]="general.phone" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [(ngModel)]="general.email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Website</label>
+          <input type="text" class="form-control" [(ngModel)]="general.website" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Academic Year</label>
+          <select class="form-control" [(ngModel)]="general.academicYear">
+            <option value="2023-24">2023-24</option>
+            <option value="2024-25">2024-25</option>
+            <option value="2025-26">2025-26</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timezone</label>
+          <select class="form-control" [(ngModel)]="general.timezone">
+            <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+            <option value="UTC">UTC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select class="form-control" [(ngModel)]="general.language">
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Gujarati</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Settings -->
+    <div *ngIf="activeTab() === 'notifications'" class="settings-section">
+      <div class="section-header"><h4>Notification Settings</h4><p>Configure when and how you receive alerts</p></div>
+      <div class="toggle-list">
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Email on Student Enrollment</span>
+            <span class="tr-desc">Receive email when a new student registers</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="notifications.emailOnEnrollment" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Email on New Content Upload</span>
+            <span class="tr-desc">Get notified when teachers add new videos or PDFs</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="notifications.emailOnNewContent" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Push Notifications</span>
+            <span class="tr-desc">Enable browser/app push notifications</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="notifications.pushNotifications" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Weekly Performance Report</span>
+            <span class="tr-desc">Receive weekly analytics summary via email</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="notifications.weeklyReport" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">System Maintenance Alerts</span>
+            <span class="tr-desc">Get notified about scheduled maintenance</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="notifications.maintenanceAlerts" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Storage Settings -->
+    <div *ngIf="activeTab() === 'storage'" class="settings-section">
+      <div class="section-header"><h4>Storage & Media Settings</h4><p>Configure upload limits and processing options</p></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Max Video Size (MB)</label>
+          <input type="number" class="form-control" [(ngModel)]="storage.maxVideoSizeMB" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max PDF Size (MB)</label>
+          <input type="number" class="form-control" [(ngModel)]="storage.maxPdfSizeMB" />
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label">Allowed Video Formats</label>
+          <input type="text" class="form-control" [(ngModel)]="storage.allowedVideoFormats" placeholder="mp4,mov,avi" />
+        </div>
+      </div>
+      <div class="toggle-list mt-2">
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Auto Process Videos</span>
+            <span class="tr-desc">Automatically transcode videos after upload</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="storage.autoProcessVideos" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Generate Video Thumbnails</span>
+            <span class="tr-desc">Auto-generate thumbnail from first frame</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="storage.generateThumbnails" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Enable Compression</span>
+            <span class="tr-desc">Reduce file sizes while maintaining quality</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="storage.compressionEnabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div *ngIf="activeTab() === 'security'" class="settings-section">
+      <div class="section-header"><h4>Security Settings</h4><p>Authentication and access control configuration</p></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Session Timeout (minutes)</label>
+          <input type="number" class="form-control" [(ngModel)]="security.sessionTimeout" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Login Attempts</label>
+          <input type="number" class="form-control" [(ngModel)]="security.maxLoginAttempts" />
+        </div>
+      </div>
+      <div class="toggle-list mt-2">
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Require Strong Password</span>
+            <span class="tr-desc">Enforce minimum 8 chars with numbers and symbols</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="security.requireStrongPassword" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Two-Factor Authentication</span>
+            <span class="tr-desc">Require OTP for all admin logins</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="security.twoFactorAuth" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row-item">
+          <div class="tr-info">
+            <span class="tr-label">Activity Audit Logs</span>
+            <span class="tr-desc">Log all admin actions for compliance</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="security.auditLogs" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Branding -->
+    <div *ngIf="activeTab() === 'branding'" class="settings-section">
+      <div class="section-header"><h4>Branding</h4><p>Customize the look and feel of your platform</p></div>
+      <div class="branding-grid">
+        <div class="brand-upload-card">
+          <div class="upload-preview logo-preview">
+            <i class="bi bi-mortarboard-fill"></i>
+          </div>
+          <div class="upload-info">
+            <span class="upload-label">Platform Logo</span>
+            <small>Recommended: 200×60px PNG</small>
+          </div>
+          <label class="btn-upload">
+            <i class="bi bi-upload me-2"></i>Upload
+            <input type="file" accept="image/*" hidden />
+          </label>
+        </div>
+        <div class="brand-upload-card">
+          <div class="upload-preview favicon-preview">
+            <i class="bi bi-mortarboard"></i>
+          </div>
+          <div class="upload-info">
+            <span class="upload-label">Favicon</span>
+            <small>Recommended: 32×32px ICO/PNG</small>
+          </div>
+          <label class="btn-upload">
+            <i class="bi bi-upload me-2"></i>Upload
+            <input type="file" accept="image/*" hidden />
+          </label>
+        </div>
+      </div>
+      <div class="color-settings">
+        <div class="color-item">
+          <label class="form-label">Primary Color</label>
+          <div class="color-input-wrap">
+            <input type="color" value="#4e73df" class="color-picker-input" />
+            <input type="text" class="form-control" value="#4e73df" style="padding-left:48px" />
+          </div>
+        </div>
+        <div class="color-item">
+          <label class="form-label">Accent Color</label>
+          <div class="color-input-wrap">
+            <input type="color" value="#1cc88a" class="color-picker-input" />
+            <input type="text" class="form-control" value="#1cc88a" style="padding-left:48px" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="save-footer">
+      <button class="btn-save" (click)="saveSettings()" [disabled]="saving">
+        <span *ngIf="!saving"><i class="bi bi-check2 me-2"></i>Save Changes</span>
+        <span *ngIf="saving"><span class="spinner-border spinner-border-sm me-2"></span>Saving...</span>
+      </button>
+      <button class="btn-reset">Reset to Defaults</button>
+    </div>
+  </div>
+</div>

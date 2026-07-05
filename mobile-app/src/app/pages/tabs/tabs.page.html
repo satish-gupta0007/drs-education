@@ -1,0 +1,33 @@
+<ion-content fullscreen>
+  <ion-router-outlet></ion-router-outlet>
+</ion-content>
+
+<!-- ✅ CUSTOM TAB BAR -->
+<div class="custom-tab-bar">
+
+  <button [class.active]="active==='home'" (click)="go('home')">
+    <ion-icon name="home-outline"></ion-icon>
+    <span>Home</span>
+  </button>
+
+  <button [class.active]="active==='courses'" (click)="go('courses')">
+    <ion-icon name="book-outline"></ion-icon>
+    <span>Courses</span>
+  </button>
+
+  <button [class.active]="active==='videos'" (click)="go('videos')">
+    <ion-icon name="play-circle-outline"></ion-icon>
+    <span>Videos</span>
+  </button>
+
+  <button [class.active]="active==='quizzes'" (click)="go('quizzes')">
+    <ion-icon name="help-circle-outline"></ion-icon>
+    <span>Quizzes</span>
+  </button>
+
+  <button [class.active]="active==='profile'" (click)="go('profile')">
+    <ion-icon name="person-outline"></ion-icon>
+    <span>Profile</span>
+  </button>
+
+</div>

@@ -1,0 +1,195 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Study Materials</h1>
+    <p class="page-subtitle">Upload and manage PDFs, notes, assignments & question papers</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    <i class="bi bi-file-earmark-plus me-2"></i>Upload Material
+  </button>
+</div>
+
+<div class="toolbar">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search materials..." />
+  </div>
+  <select [(ngModel)]="filterType" class="filter-select">
+    <option value="">All Types</option>
+    <option *ngFor="let t of pdfTypes" [value]="t">{{ typeLabels[t] }}</option>
+  </select>
+  <select [(ngModel)]="filterClass" class="filter-select">
+    <option value="">All Classes</option>
+    <option *ngFor="let c of classes" [value]="c">{{ c }}</option>
+  </select>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Material</th>
+        <th>Subject / Class</th>
+        <th>Type</th>
+        <th>Size / Pages</th>
+        <th>Downloads</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pdf of filteredPdfs">
+        <td>
+          <div class="pdf-cell">
+            <div class="pdf-icon" [style.background]="typeColors[pdf.type] + '18'" [style.color]="typeColors[pdf.type]">
+               <i class="bi bi-file-earmark-pdf-fill"></i>
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <div>
+              <span class="pdf-title">{{ pdf.title }}</span>
+              <span class="pdf-chapter" *ngIf="pdf.chapter">{{ pdf.chapter }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="subject-pill">{{ pdf.subjectName }}</span>
+          <span class="class-text">{{ pdf.className }}</span>
+        </td>
+        <td>
+          <span class="type-badge" [style.background]="typeColors[pdf.type] + '18'" [style.color]="typeColors[pdf.type]">
+            {{ typeLabels[pdf.type] }}
+          </span>
+        </td>
+        <td>
+          <span class="size-text">{{ formatSize(pdf.fileSize) }}</span>
+          <span class="pages-text">{{ pdf.pageCount }} pages</span>
+        </td>
+        <td>
+          <div class="dl-count">
+            <i class="bi bi-download"></i>
+            <span>{{ pdf.downloadCount | number }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="status-badge" [class.published]="publishStatus(pdf) === 'published'" [class.draft]="publishStatus(pdf) !== 'published'">
+            <!-- {{ pdf.isPublished ? 'Published' : 'Draft' }} -->
+            {{ publishStatus(pdf) }}
+
+          </span>
+        </td>
+        <td>
+          <div class="action-group">
+            <button class="btn-icon view" title="Preview"><i class="bi bi-eye"></i></button>
+            <button class="btn-icon edit" (click)="openEditModal(pdf)" title="Edit"><i class="bi bi-pencil"></i></button>
+            <button class="btn-icon" [class.toggle-on]="pdf.isPublished" [class.toggle-off]="!pdf.isPublished"
+                    (click)="togglePublish(pdf)" [title]="pdf.isPublished ? 'Unpublish' : 'Publish'">
+              <i [class]="'bi ' + (pdf.isPublished ? 'bi-eye-slash' : 'bi-eye')"></i>
+            </button>
+            <button class="btn-icon delete" (click)="deletePdf(pdf.id)" title="Delete"><i class="bi bi-trash3"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="filteredPdfs.length === 0" class="empty-state">
+    <i class="bi bi-file-earmark-pdf"></i>
+    <h4>No materials found</h4>
+    <p>Upload study materials for your students</p>
+    <button class="btn-primary" (click)="openAddModal()">Upload Material</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>{{ editMode() ? 'Edit Material' : 'Upload Study Material' }}</h5>
+      <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #pdfForm="ngForm">
+
+        <!-- Drop Zone -->
+        <div *ngIf="!editMode()"
+             class="drop-zone" [class.dragging]="isDragging()" [class.has-file]="selectedFile"
+             (dragover)="isDragging.set(true); $event.preventDefault()"
+             (dragleave)="isDragging.set(false)"
+             (drop)="onFileDrop($event)">
+          <div *ngIf="!selectedFile" class="drop-placeholder">
+            <div class="drop-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+            <h6>Drag & drop your PDF here</h6>
+            <p>PDF files only, up to 50MB</p>
+            <label class="btn-select-file">
+              <i class="bi bi-folder2-open me-2"></i>Browse File
+              <input type="file" accept=".pdf" (change)="onFileSelect($event)" hidden />
+            </label>
+          </div>
+          <div *ngIf="selectedFile" class="file-selected-row">
+            <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size:2rem"></i>
+            <div>
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <span class="file-size-sm">{{ formatSize(selectedFile.size) }}</span>
+            </div>
+            <button type="button" class="btn-remove" (click)="selectedFile=null"><i class="bi bi-x-circle"></i></button>
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div *ngIf="submitting" class="upload-progress-bar">
+          <div class="up-header"><span>Uploading...</span><span>{{ uploadProgress() }}%</span></div>
+          <div class="up-track"><div class="up-fill" [style.width]="uploadProgress()+'%'" ></div></div>
+        </div>
+
+        <div class="form-group mt-3">
+          <label class="form-label">Title <span class="required">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="currentPdf.title" name="title" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentPdf.className" name="className" required>
+              <option value="">Select Class</option>
+              <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentPdf.subjectName" name="subjectName" required>
+              <option value="">Select Subject</option>
+              <option *ngFor="let s of subjects" [value]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Material Type <span class="required">*</span></label>
+            <select class="form-control" [(ngModel)]="currentPdf.type" name="type" required>
+              <option *ngFor="let t of pdfTypes" [value]="t">{{ typeLabels[t] }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Chapter / Unit</label>
+            <input type="text" class="form-control" [(ngModel)]="currentPdf.chapter" name="chapter" placeholder="e.g. Chapter 5" />
+          </div>
+        </div>
+        <div class="form-group toggle-option-row">
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="currentPdf.isPublished" name="isPublished" />
+            <span class="toggle-slider"></span>
+          </label>
+          <div>
+            <span class="toggle-label">Publish Now</span>
+            <small>Make visible to students immediately</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting() || pdfForm.invalid || (!editMode() && !selectedFile)">
+            <span *ngIf="!submitting()">{{ editMode() ? 'Save Changes' : 'Upload' }}</span>
+            <span *ngIf="submitting()"><span class="spinner-border spinner-border-sm me-2"></span>Uploading...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

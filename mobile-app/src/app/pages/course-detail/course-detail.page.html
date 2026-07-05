@@ -1,0 +1,175 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="cd-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button text="" defaultHref="/tabs/courses"></ion-back-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+    <ion-buttons slot="end">
+      <button class="cd-toolbar-btn" (click)="toggleBookmark()">
+        <ion-icon 
+  [name]="isBookmarked ? 'bookmark-sharp' : 'bookmark-outline'"
+  [style.color]="isBookmarked ? '#f6c23e' : '#fff'">
+</ion-icon>
+        </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="cd-content">
+
+  <!-- Hero Section -->
+  <div class="cd-hero" [style.background]="'linear-gradient(160deg,' + course()?.color + ' 0%, #1a2035 100%)'">
+    <div class="hero-subject-icon" [style.background]="course()?.color + '30'">
+      <ion-icon name="school-outline"></ion-icon>
+    </div>
+    <h1 class="hero-title">{{ course()?.name }}</h1>
+    <p class="hero-class">{{ course()?.className }}</p>
+
+    <!-- Quick Stats Row -->
+    <div class="hero-stats">
+      <div class="hs-item">
+        <ion-icon name="play-circle-outline"></ion-icon>
+        <span>{{ course()?.totalVideos }} Videos</span>
+      </div>
+      <div class="hs-sep">·</div>
+      <div class="hs-item">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ course()?.totalDuration }}</span>
+      </div>
+      <div class="hs-sep">·</div>
+      <div class="hs-item">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>{{ course()?.totalStudents }} students</span>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="hero-progress">
+      <div class="hp-label">
+        <span>Your Progress</span>
+        <span class="hp-pct">{{ course()?.progress }}%</span>
+      </div>
+      <ion-progress-bar [value]="course()?.progress / 100" color="success"></ion-progress-bar>
+      <span class="hp-detail">{{ watchedCount }} of {{ course()?.totalVideos }} videos completed</span>
+    </div>
+  </div>
+
+  <!-- Teacher Card -->
+  <div class="teacher-card">
+    <div class="tc-avatar">{{ course()?.teacherName?.split(' ')[1]?.[0] }}</div>
+    <div class="tc-info">
+      <span class="tc-name">{{ course()?.teacherName }}</span>
+      <span class="tc-qual">{{ course()?.teacherQualification }}</span>
+    </div>
+    <div class="tc-rating">
+      <ion-icon name="star-sharp" style="color:#f6c23e; font-size:14px"></ion-icon>
+      <span>{{ course()?.teacherRating }}</span>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="cd-description">
+    <p>{{ course()?.description }}</p>
+  </div>
+
+  <!-- Segment Tabs -->
+  <div class="cd-segment-wrap">
+    <ion-segment [(ngModel)]="activeSegment" class="cd-segment">
+      <ion-segment-button value="videos">
+        <ion-icon name="play-circle-outline"></ion-icon>
+        <ion-label>Videos ({{ videosCount }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="materials">
+        <ion-icon name="document-outline"></ion-icon>
+        <ion-label>Materials ({{ pdfsCount }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="quizzes">
+        <ion-icon name="help-circle-outline"></ion-icon>
+        <ion-label>Quizzes ({{ quizzesCount }})</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- ===== VIDEOS TAB ===== -->
+  <div *ngIf="activeSegment === 'videos'" class="tab-section">
+    <div *ngFor="let chapter of videoChapters" class="chapter-group">
+      <div class="chapter-header">
+        <span class="chapter-title">{{ chapter }}</span>
+        <span class="chapter-count">{{ groupedVideos[chapter]?.length || 0 }} videos</span>
+      </div>
+
+      <div *ngFor="let video of groupedVideos[chapter]; let last = last"
+           class="video-list-item"
+           [class.watched]="video.isWatched"
+           [class.locked]="video.isLocked"
+           [class.last]="last"
+           (click)="openVideo(video)">
+
+        <div class="vli-icon" [class.locked-icon]="video.isLocked">
+          <ion-icon [name]="video.isLocked ? 'lock-closed-outline' : (video.isWatched ? 'checkmark-circle-outline' : 'play-circle-outline')"></ion-icon>
+        </div>
+
+        <div class="vli-info">
+          <span class="vli-title">{{ video.title }}</span>
+          <span class="vli-duration"><ion-icon name="time-outline"></ion-icon> {{ video.duration }}</span>
+        </div>
+
+        <div class="vli-status">
+          <span *ngIf="video.isWatched" class="watched-tag">✓</span>
+          <ion-icon *ngIf="!video.isLocked && !video.isWatched" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MATERIALS TAB ===== -->
+  <div *ngIf="activeSegment === 'materials'" class="tab-section">
+    <div *ngFor="let pdf of pdfs()" class="pdf-list-item">
+      <div class="pli-icon" [style.background]="getPdfTypeColor(pdf.type) + '20'" [style.color]="getPdfTypeColor(pdf.type)">
+        <ion-icon name="document-outline"></ion-icon>
+      </div>
+      <div class="pli-info">
+        <span class="pli-title">{{ pdf.title }}</span>
+        <div class="pli-meta">
+          <span class="pli-type-chip" [style.background]="getPdfTypeColor(pdf.type) + '18'" [style.color]="getPdfTypeColor(pdf.type)">
+            {{ getPdfTypeLabel(pdf.type) }}
+          </span>
+          <span class="pli-size">{{ pdf.size }}</span>
+          <span class="pli-chapter">{{ pdf.chapter }}</span>
+        </div>
+      </div>
+      <button class="pli-download-btn" [class.downloaded]="pdf.isDownloaded">
+        <ion-icon [name]="pdf.isDownloaded ? 'checkmark-circle-outline' : 'download-outline'"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== QUIZZES TAB ===== -->
+  <div *ngIf="activeSegment === 'quizzes'" class="tab-section">
+    <div *ngFor="let quiz of quizzes()" class="quiz-list-item"
+         [class.completed]="quiz.status === 'completed'"
+         (click)="openQuiz(quiz)">
+      <div class="qli-icon" [style.color]="getQuizStatusColor(quiz.status)">
+        <ion-icon name="help-circle-outline"></ion-icon>
+      </div>
+      <div class="qli-info">
+        <span class="qli-title">{{ quiz.title }}</span>
+        <div class="qli-meta">
+          <span>{{ quiz.questions }} questions</span>
+          <span>·</span>
+          <span>{{ quiz.duration }} min</span>
+        </div>
+        <span *ngIf="quiz.bestScore !== undefined" class="qli-score">
+          Best: {{ quiz.bestScore }}%
+        </span>
+      </div>
+      <div class="qli-status">
+        <span class="qli-status-chip" [style.background]="getQuizStatusColor(quiz.status) + '18'" [style.color]="getQuizStatusColor(quiz.status)">
+          {{ quiz.status === 'completed' ? '✓ Done' : quiz.status === 'in_progress' ? 'Resume' : 'Start' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 80px"></div>
+</ion-content>

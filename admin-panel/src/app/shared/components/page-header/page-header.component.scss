@@ -1,0 +1,35 @@
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.ph-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #181c32;
+  margin: 0 0 0.25rem;
+}
+.ph-subtitle {
+  color: #a1a5b7;
+  font-size: 0.875rem;
+  margin: 0;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #4e73df, #1cc88a);
+  border: none;
+  color: #fff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 9px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+  &:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(78,115,223,.4); }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}

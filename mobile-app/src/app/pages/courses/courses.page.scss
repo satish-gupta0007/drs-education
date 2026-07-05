@@ -1,0 +1,353 @@
+/* ==========================================================
+   Page Background
+========================================================== */
+
+:host {
+  display: block;
+  background: #f5f7fb;
+  min-height: 100%;
+}
+
+.courses-content {
+  --background: #f5f7fb;
+}
+
+/* ==========================================================
+   Header
+========================================================== */
+
+.courses-header {
+  padding: 16px;
+  background: linear-gradient(180deg, #1e2a44, #24345c);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.search-box ion-icon {
+  color: #dbe4ff;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.search-box input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: #b8c2d9;
+}
+
+/* ==========================================================
+   Segment
+========================================================== */
+
+.segment-box {
+  display: flex;
+  background: rgba(255,255,255,.08);
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.segment-box button {
+  flex: 1;
+  height: 42px;
+  border: none;
+  background: transparent;
+  color: #b8c2d9;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: .25s;
+}
+
+.segment-box button.active {
+  background: #4f6df5;
+  color: white;
+  box-shadow: 0 4px 10px rgba(79,109,245,.35);
+}
+
+/* ==========================================================
+   Section
+========================================================== */
+
+.section {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ==========================================================
+   Card
+========================================================== */
+
+.course-card {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  border: 1px solid #edf2f7;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+
+  transition: .2s;
+}
+
+.course-card:active {
+  transform: scale(.98);
+}
+
+/* ==========================================================
+   Icon
+========================================================== */
+
+.course-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-icon ion-icon {
+  color: white;
+  font-size: 28px;
+}
+
+/* ==========================================================
+   Body
+========================================================== */
+
+.course-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ==========================================================
+   Title
+========================================================== */
+
+.course-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.course-title-area {
+  flex: 1;
+}
+
+.course-title-area h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.course-title-area p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ==========================================================
+   Favourite
+========================================================== */
+
+.fav-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.fav-btn ion-icon {
+  font-size: 22px;
+  color: #d1d5db;
+}
+
+.fav-btn.active ion-icon {
+  color: #f6c23e;
+}
+
+/* ==========================================================
+   Description
+========================================================== */
+
+.course-description {
+  margin: 12px 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* ==========================================================
+   Meta
+========================================================== */
+
+.course-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.course-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.course-meta ion-icon {
+  font-size: 15px;
+}
+
+/* ==========================================================
+   Progress
+========================================================== */
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 30px;
+  transition: width .4s ease;
+}
+
+.progress-text {
+  width: 40px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* ==========================================================
+   Buttons
+========================================================== */
+
+.course-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.course-buttons button {
+  flex: 1;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  padding: 10px;
+  background: #4f6df5;
+  color: white;
+  border: none;
+}
+
+.btn-primary:active {
+  opacity: .9;
+}
+
+.btn-outline {
+  background: white;
+  color: #4f6df5;
+  border: 1px solid #4f6df5;
+  padding: 10px;
+}
+
+.btn-secondary {
+  padding: 10px;
+  width: 100%;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #dbe2ea;
+}
+
+/* ==========================================================
+   Arrow
+========================================================== */
+
+.course-arrow {
+  font-size: 20px;
+  color: #cbd5e1;
+  align-self: center;
+}
+
+/* ==========================================================
+   Mobile
+========================================================== */
+
+@media (max-width: 600px) {
+
+  .course-card {
+    padding: 14px;
+  }
+
+  .course-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .course-icon ion-icon {
+    font-size: 24px;
+  }
+
+  .course-title-area h3 {
+    font-size: 15px;
+  }
+
+  .course-buttons {
+    flex-direction: column;
+  }
+
+  .course-buttons button,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .course-arrow {
+    display: none;
+  }
+}

@@ -1,0 +1,180 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ quiz()?.title }}</ion-title>
+    <ion-buttons slot="end" *ngIf="quizState() === 'active'">
+      <div class="timer-chip" [class.warning]="timerWarning">
+        <ion-icon name="time-outline"></ion-icon>
+        {{ formatTime(timeLeft()) }}
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="quiz-content">
+
+  <!-- ===== INTRO STATE ===== -->
+  <div *ngIf="quizState() === 'intro'" class="quiz-intro">
+    <div class="intro-card">
+      <div class="intro-icon">📝</div>
+      <h2 class="intro-title">{{ quiz()?.title }}</h2>
+      <p class="intro-subject">{{ quiz()?.subject }} · {{ quiz()?.class }}</p>
+
+      <div class="intro-stats-grid">
+        <div class="is-item">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ quiz()?.duration }} min</span>
+          <small>Duration</small>
+        </div>
+        <div class="is-item">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ quiz()?.questions?.length }}</span>
+          <small>Questions</small>
+        </div>
+        <div class="is-item">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span>{{ quiz()?.totalMarks }}</span>
+          <small>Total Marks</small>
+        </div>
+        <div class="is-item">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+          <span>{{ quiz()?.passingMarks }}</span>
+          <small>Passing Marks</small>
+        </div>
+      </div>
+
+      <div class="intro-rules">
+        <h5>Rules & Instructions</h5>
+        <ul>
+          <li>Each question has one correct answer</li>
+          <li>You cannot go back to previous questions</li>
+          <li>Quiz auto-submits when time runs out</li>
+          <li>Results are shown immediately after</li>
+        </ul>
+      </div>
+
+      <button class="btn-start" (click)="startQuiz()">
+        Start Quiz <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== ACTIVE STATE ===== -->
+  <div *ngIf="quizState() === 'active'" class="quiz-active">
+    <!-- Progress Header -->
+    <div class="qa-progress-header">
+      <div class="qph-info">
+        <span class="q-current">Question {{ currentIndex() + 1 }}</span>
+        <span class="q-total">of {{ questions.length }}</span>
+      </div>
+      <div class="qph-score">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <span>{{ score() }} / {{ quiz().totalMarks }}</span>
+      </div>
+    </div>
+    <div class="qa-progress-bar">
+      <div class="qa-progress-fill" [style.width]="((currentIndex()) / questions().length * 100) + '%'"></div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="question-card" *ngIf="questions()[currentIndex()] as q">
+      <div class="qc-meta">
+        <span class="diff-badge" [class]="q.difficulty">{{ q.difficulty }}</span>
+        <span class="marks-badge">{{ q.marks }} pts</span>
+      </div>
+
+      <h3 class="question-text">{{ q.question }}</h3>
+
+      <!-- Options -->
+      <div class="options-container">
+        <div *ngFor="let opt of q.options; let i = index"
+             class="option-card"
+             [class]="selectedAnswer() !== null ? getOptionClass(currentIndex(), i) : ''"
+             [class.selected]="selectedAnswer() === i"
+             (click)="selectAnswer(i)">
+          <div class="option-letter">{{ ['A','B','C','D'][i] }}</div>
+          <span class="option-text">{{ opt }}</span>
+          <div class="option-result-icon">
+            <ion-icon *ngIf="selectedAnswer() !== null && i === q.correctAnswer" name="checkmark-circle-outline"></ion-icon>
+            <ion-icon *ngIf="selectedAnswer() === i && i !== q.correctAnswer" name="close-circle-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      <div *ngIf="showExplanation()" class="explanation-box" [class.correct]="selectedAnswer() === q.correctAnswer">
+        <div class="exp-icon">{{ selectedAnswer() === q.correctAnswer ? '✅' : '❌' }}</div>
+        <div>
+          <p class="exp-title">{{ selectedAnswer() === q.correctAnswer ? 'Correct!' : 'Incorrect' }}</p>
+          <p class="exp-text">{{ q.explanation }}</p>
+        </div>
+      </div>
+
+      <!-- Next Button -->
+      <button class="btn-next" *ngIf="showExplanation()" (click)="nextQuestion()">
+        {{ currentIndex() < questions.length - 1 ? 'Next Question' : 'Submit Quiz' }}
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RESULT STATE ===== -->
+  <div *ngIf="quizState() === 'result'" class="quiz-result">
+    <div class="result-card">
+      <div class="result-emoji">{{ isPassed ? '🎉' : '😔' }}</div>
+      <h2 class="result-status">{{ isPassed ? 'Congratulations!' : 'Keep Trying!' }}</h2>
+      <p class="result-sub">{{ isPassed ? 'You passed the quiz' : 'You didn\'t pass this time' }}</p>
+
+      <!-- Score Ring -->
+      <div class="score-ring" [class.pass]="isPassed" [class.fail]="!isPassed">
+        <span class="score-pct">{{ scorePercent }}%</span>
+        <span class="score-label">Score</span>
+      </div>
+
+      <div class="result-stats-grid">
+        <div class="rs-item">
+          <span class="rs-val green">{{ correctCount }}</span>
+          <span class="rs-label">Correct</span>
+        </div>
+        <div class="rs-item">
+          <span class="rs-val red">{{ questions().length - correctCount }}</span>
+          <span class="rs-label">Wrong</span>
+        </div>
+        <div class="rs-item">
+          <span class="rs-val blue">{{ score() }}</span>
+          <span class="rs-label">Score</span>
+        </div>
+        <div class="rs-item">
+          <span class="rs-val">{{ quiz().totalMarks }}</span>
+          <span class="rs-label">Total</span>
+        </div>
+      </div>
+
+      <!-- Answer Review -->
+      <div class="answer-review">
+        <h5>Answer Review</h5>
+        <div *ngFor="let q of questions(); let i = index" class="ar-item" [class.correct]="answers[i] === q.correctAnswer">
+          <div class="ar-icon">
+            <ion-icon [name]="answers[i] === q.correctAnswer ? 'checkmark-circle-outline' : 'close-circle-outline'"></ion-icon>
+          </div>
+          <div class="ar-content">
+            <p class="ar-question">{{ q.question }}</p>
+            <p class="ar-your-ans">Your: {{ answers[i] !== null ? q.options[answers[i]!] : 'Skipped' }}</p>
+            <p *ngIf="answers[i] !== q.correctAnswer" class="ar-correct-ans">Correct: {{ q.options[q.correctAnswer] }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-retake" (click)="retakeQuiz()">
+          <ion-icon name="refresh-outline"></ion-icon> Retake Quiz
+        </button>
+        <button class="btn-home" (click)="goHome()" >Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:40px"></div>
+</ion-content>
