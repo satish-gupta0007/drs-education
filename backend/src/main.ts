@@ -24,6 +24,7 @@ async function bootstrap() {
       'http://localhost:4200',
       'http://localhost:8100',
       'https://admin.drseducation.in',
+      'https://browser-two-liart.vercel.app/',
       'capacitor://localhost',
       'ionic://localhost',
     ],
