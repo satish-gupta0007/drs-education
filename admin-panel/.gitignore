@@ -35,3 +35,4 @@ pnpm-error.log
 # Build
 /build
 *.js.map
+.vercel
